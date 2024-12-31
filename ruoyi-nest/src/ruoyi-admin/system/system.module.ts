@@ -10,7 +10,6 @@ import { SysRoleController } from '~/ruoyi-admin/system/sys-role/sys-role.contro
 import { SysMenuController } from '~/ruoyi-admin/system/sys-menu/sys-menu.controller';
 import { SysPostController } from '~/ruoyi-admin/system/sys-post/sys-post.controller';
 import { SysRegisterController } from '~/ruoyi-admin/system/sys-register/sys-register.controller';
-import { SysStudentController } from '~/ruoyi-admin/system/sys-student/sys-student.controller';
 import { SysLoginService } from '~/ruoyi-admin/system/sys-login/sys-login.service';
 import { SysRegisterService } from '~/ruoyi-admin/system/sys-register/sys-register.service';
 import { AuthModule } from '~/ruoyi-framework/auth/auth.module';
@@ -30,7 +29,6 @@ import { SysRoleModule } from '~/ruoyi-system/sys-role/sys-role.module';
 import { SysUserPostModule } from '~/ruoyi-system/sys-user-post/sys-user-post.module';
 import { SysUserRoleModule } from '~/ruoyi-system/sys-user-role/sys-user-role.module';
 import { SysRoleMenuModule } from '~/ruoyi-system/sys-role-menu/sys-role-menu.module';
-import { SysStudentModule } from '~/ruoyi-system/sys-student/sys-student.module';
 
 
 const providers = [
@@ -56,7 +54,6 @@ const providers = [
     SysUserPostModule,
     SysUserRoleModule,
     SysRoleMenuModule,
-    SysStudentModule
   ],
   controllers: [
     SysLoginController,
@@ -70,7 +67,6 @@ const providers = [
     SysMenuController,
     SysPostController,
     SysRegisterController,
-    SysStudentController
   ],
   providers,
   exports: []

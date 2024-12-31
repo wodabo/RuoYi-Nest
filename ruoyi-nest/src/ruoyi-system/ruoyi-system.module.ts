@@ -10,7 +10,6 @@ import { SysDictTypeModule } from './sys-dict-type/sys-dict-type.module';
 import { SysRoleDeptModule } from './sys-role-dept/sys-role-dept.module';
 import { SysConfigModule } from './sys-config/sys-config.module';
 import { SysNoticeModule } from './sys-notice/sys-notice.module';
-import { SysStudentModule } from './sys-student/sys-student.module';
 @Module({
   imports: [
     SysUserModule,
@@ -24,7 +23,6 @@ import { SysStudentModule } from './sys-student/sys-student.module';
     SysRoleDeptModule,
     SysConfigModule,
     SysNoticeModule,
-    SysStudentModule
   ]
 })
 export class RuoYiSystemModule {}

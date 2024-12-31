@@ -1,0 +1,69 @@
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IsNotEmpty, IsNumber, IsString, IsDate } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+@Entity()
+export class ${subClassName} {
+    @PrimaryGeneratedColumn()
+    @ApiProperty()
+    @IsNumber()
+    id: number;
+
+#foreach ($column in $subTable.columns)
+#if(!$table.isSuperColumn($column.tsField))
+    /** $column.columnComment */
+#if($column.list)
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+#if($parentheseIndex != -1)
+    @ApiProperty({ description: "${comment}" })
+#elseif($column.tsType == 'Date')
+    @IsDate()
+    @ApiProperty({ description: "${comment}", type: Date })
+#else
+    @ApiProperty({ description: "${comment}" })
+#end
+#end
+    @Column()
+    @IsNotEmpty()
+    @IsString()
+    $column.tsField: $column.tsType;
+
+#end
+#end
+#foreach ($column in $subTable.columns)
+#if(!$table.isSuperColumn($column.tsField))
+#if($column.tsField.length() > 2 && $column.tsField.substring(1,2).matches("[A-Z]"))
+#set($AttrName=$column.tsField)
+#else
+#set($AttrName=$column.tsField.substring(0,1).toUpperCase() + ${column.tsField.substring(1)})
+#end
+    set${AttrName}(@IsNotEmpty() @IsString() ${column.tsField}: $column.tsType) 
+    {
+        this.$column.tsField = $column.tsField;
+    }
+
+    get${AttrName}() 
+    {
+        return this.$column.tsField;
+    }
+#end
+#end
+
+    toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+#foreach ($column in $subTable.columns)
+#if($column.tsField.length() > 2 && $column.tsField.substring(1,2).matches("[A-Z]"))
+#set($AttrName=$column.tsField)
+#else
+#set($AttrName=$column.tsField.substring(0,1).toUpperCase() + ${column.tsField.substring(1)})
+#end
+            .append("${column.tsField}", get${AttrName}())
+#end
+            .toString();
+    }
+}

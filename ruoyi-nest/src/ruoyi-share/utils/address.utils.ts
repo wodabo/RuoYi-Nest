@@ -3,7 +3,7 @@ import axios from 'axios';
 import { IpUtils } from './ip.utils';
 import { ConfigService } from '@nestjs/config';
 import { RuoYiConfigService } from '../config/ruoyi-config.service';
-import { Constants } from '../constant/constants';
+import { Constants } from '~/ruoyi-share/constant/Constants';
 
 /**
  * 获取地址类

@@ -5,7 +5,7 @@ import { SysMenuRepository } from './repositories/sys-menu.repository';
 import { UserConstants } from '~/ruoyi-share/constant/UserConstants';
 import { RouterVo } from '~/ruoyi-share/vo/router.vo';
 import { StringUtils } from '~/ruoyi-share/utils/string.utils';
-import { Constants } from '~/ruoyi-share/constant/constants';
+import { Constants } from '~/ruoyi-share/constant/Constants';
 import { MetaVo } from '~/ruoyi-share/vo/meta.vo';
 import { SecurityUtils } from '~/ruoyi-share/utils/security.utils';
 import { SelectQueryBuilder } from 'typeorm';

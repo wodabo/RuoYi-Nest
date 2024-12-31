@@ -1,4 +1,4 @@
-import { Constants } from '../constant/constants';
+import { Constants } from '~/ruoyi-share/constant/Constants';
 import { Injectable } from '@nestjs/common';
 import { GenConstants } from '../constant/GenConstants';
 

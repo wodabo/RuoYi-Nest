@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import { RuoYiConfigService } from '../config/ruoyi-config.service';
-import { Constants } from '../constant/constants';
+import { Constants } from '~/ruoyi-share/constant/Constants';
 import { MimeTypeUtils } from '~/ruoyi-share/utils/mime-type.utils';
 import { InvalidExtensionException } from '~/ruoyi-share/exception/file/InvalidExtensionException'
 import { FileSizeLimitExceededException } from '../exception/file/FileSizeLimitExceededException';

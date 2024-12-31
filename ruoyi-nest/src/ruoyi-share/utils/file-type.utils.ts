@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { RuoYiConfigService } from '../config/ruoyi-config.service';
-import { Constants } from '../constant/constants';
+import { Constants } from '~/ruoyi-share/constant/Constants';
 import { FileUploadUtils } from './file-upload.utils';
 import { MimeTypeUtils } from './mime-type.utils';
 import { StringUtils } from './string.utils';

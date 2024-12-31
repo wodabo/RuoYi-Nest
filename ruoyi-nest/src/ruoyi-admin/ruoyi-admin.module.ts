@@ -16,13 +16,15 @@ import { UtilsModule } from '~/ruoyi-share/utils/utils.module';
 import { ServeStaticModule,ServeStaticModuleAsyncOptions } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RuoYiConfigService } from '~/ruoyi-share/config/ruoyi-config.service';
-import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { RequestContextInterceptor } from '~/ruoyi-share/interceptors/request-context.interceptor';
 import { LogInterceptor } from '~/ruoyi-share/interceptors/log.interceptor';
 
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { RuoYiGeneratorModule } from '~/ruoyi-generator/ruoyi-generator.module'; 
+
+import { DemoModeGuard } from '~/ruoyi-share/guard/demo-mode.guard';
 
 /**
  * 启动程序
@@ -104,6 +106,10 @@ import { RuoYiGeneratorModule } from '~/ruoyi-generator/ruoyi-generator.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: LogInterceptor
+    },
+    {
+      provide: APP_GUARD,
+      useClass: DemoModeGuard
     }
   ],
   controllers: [],

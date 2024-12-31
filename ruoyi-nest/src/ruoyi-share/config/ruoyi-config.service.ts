@@ -26,6 +26,9 @@ export class RuoYiConfigService {
     /** Captcha type */
     private captchaType: string;
 
+    /** Demo switch */
+    private demoEnabled: boolean;
+
     constructor(private configService: ConfigService) {
         this.name = this.configService.get<string>('ruoyi.name');
         this.version = this.configService.get<string>('ruoyi.version');
@@ -33,6 +36,7 @@ export class RuoYiConfigService {
         this.profile = this.configService.get<string>('ruoyi.profile');
         this.addressEnabled = this.configService.get<boolean>('ruoyi.addressEnabled');
         this.captchaType = this.configService.get<string>('ruoyi.captchaType');
+        this.demoEnabled = this.configService.get<boolean>('ruoyi.demoEnabled');
     }
 
     getName(): string {
@@ -110,4 +114,9 @@ export class RuoYiConfigService {
     getUploadPath(): string {
         return this.getProfile() + "/upload";
     }
+
+    isDemoEnabled(): boolean {
+        return this.demoEnabled;
+    }
+
 }

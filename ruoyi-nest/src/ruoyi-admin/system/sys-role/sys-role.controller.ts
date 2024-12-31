@@ -123,16 +123,16 @@ export class SysRoleController extends BaseController {
   //   return AjaxResult.toAjax(await this.sysRoleService.authDataScope(role));
   // }
 
-  // @PreAuthorize('system:role:edit')
-  // @Put('changeStatus')
-  // @Log({ title: '角色管理', businessType: BusinessType.UPDATE })
-  // @ApiOperation({ summary: '状态修改' })
-  // @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
-  // async changeStatus(@Body() role: SysRole): Promise<AjaxResult> {
-  //   this.sysRoleService.checkRoleAllowed(role);
-  //   await this.sysRoleService.checkRoleDataScope(role.roleId);
-  //   return AjaxResult.toAjax(await this.sysRoleService.updateRoleStatus(role));
-  // }
+  @PreAuthorize('system:role:edit')
+  @Put('changeStatus')
+  @Log({ title: '角色管理', businessType: BusinessType.UPDATE })
+  @ApiOperation({ summary: '状态修改' })
+  @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
+  async changeStatus(@Body() role: SysRole): Promise<AjaxResult> {
+    this.roleService.checkRoleAllowed(role);
+    await this.roleService.checkRoleDataScope([role.roleId]);
+    return AjaxResult.success(await this.roleService.updateRoleStatus(role));
+  }
 
   @PreAuthorize("hasPermi('system:role:remove')")
   @Delete(':roleIds')

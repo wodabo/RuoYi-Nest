@@ -163,6 +163,17 @@ export class SysRoleService {
     return this.insertRoleMenu(role);
   }
 
+  
+    /**
+     * 修改角色状态
+     * 
+     * @param role 角色信息
+     * @return 结果
+     */
+    async updateRoleStatus(role: SysRole): Promise<number> {
+        return this.roleRepository.updateRole(role);
+    }
+
   /**
    * 通过角色ID查询角色使用数量
    * 

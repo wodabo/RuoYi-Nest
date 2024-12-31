@@ -88,3 +88,6 @@
 ## 若依前后端分离交流群
 
 QQ群： [![加入QQ群](https://img.shields.io/badge/151450850-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=ZMf4C__lfo6XoBcTqZu-1-rnQ8nfPY44&authKey=qCtd5hLjiMJ4HVWVNZzttlJRyImSDw0tYe71h2I%2BQo5TVFolcJko6N%2BGK8yFP6r4&noverify=0&group_code=224774162) 点击按钮入群。
+
+
+<img src="./pay.png"/>

@@ -20,6 +20,7 @@ import { SysMenuModule } from '~/ruoyi-system/sys-menu/sys-menu.module';
 import { SysDictDataModule } from '~/ruoyi-system/sys-dict-data/sys-dict-data.module';
 import { SysDictTypeModule } from '~/ruoyi-system/sys-dict-type/sys-dict-type.module';
 import { SysUserController } from '~/ruoyi-admin/system/sys-user/sys-user.controller';
+import { SysIndexController } from '~/ruoyi-admin/system/sys-index/sys-index.controller';
 import { SysDeptModule } from '~/ruoyi-system/sys-dept/sys-dept.module';
 import { SysConfigModule } from '~/ruoyi-system/sys-config/sys-config.module';
 import { SysNoticeModule } from '~/ruoyi-system/sys-notice/sys-notice.module';
@@ -67,6 +68,7 @@ const providers = [
     SysMenuController,
     SysPostController,
     SysRegisterController,
+    SysIndexController,
   ],
   providers,
   exports: []

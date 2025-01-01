@@ -9,7 +9,6 @@ import { RedisCacheService } from '~/ruoyi-share/redis/redis-cache.service';
 import { v4 as uuidv4 } from 'uuid';
 import { RuoYiConfigService } from '~/ruoyi-share/config/ruoyi-config.service';
 import { Public } from '~/ruoyi-framework/auth/decorators/public.decorator';
-import * as TrekCaptcha from 'trek-captcha';
 import { GifUtils } from '~/ruoyi-share/utils/gif.utils';
 import { FileUploadUtils } from '~/ruoyi-share/utils/file-upload.utils';
 import { FileUtils } from '~/ruoyi-share/utils/file.utils';
@@ -52,18 +51,14 @@ export class SysShareController extends BaseController {
     // 生成验证码
     const captchaType = this.ruoYiConfigService.getCaptchaType();
     if (captchaType === 'math') {
-      const { token, buffer } = await TrekCaptcha({
+      const { token, buffer } = await this.gifUtils.generate({
         size: 4,
-        numeric: false,
-        characters: '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', // 排除易混淆字符
       });
       code = token.toLowerCase();
       image = `${buffer.toString('base64')}`;
     } else if (captchaType === 'char') {
-      const { token, buffer } = await TrekCaptcha({
+      const { token, buffer } = await this.gifUtils.generate({
         size: 4,
-        numeric: false,
-        characters: '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', // 排除易混淆字符
       });
       code = token.toLowerCase();
       image = `${buffer.toString('base64')}`;

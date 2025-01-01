@@ -94,6 +94,7 @@ export class SysMenuController extends BaseController {
   }
 
   @PreAuthorize("hasPermi('system:menu:edit')")
+  @Log({ title: '菜单管理', businessType: BusinessType.UPDATE })
   @Put()
   @ApiOperation({ summary: '修改菜单' })
   async edit(@Body() menu: SysMenu,@Request() req): Promise<AjaxResult> {
@@ -110,7 +111,7 @@ export class SysMenuController extends BaseController {
   }
 
   @PreAuthorize("hasPermi('system:menu:remove')")
-  // @Log({ title: '菜单管理', businessType: BusinessType.DELETE })
+  @Log({ title: '菜单管理', businessType: BusinessType.DELETE })
   @Delete(':menuId')
   @ApiOperation({ summary: '删除菜单' })
   async remove(@Param('menuId') menuId: number): Promise<AjaxResult> {

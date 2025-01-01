@@ -76,7 +76,6 @@ export class SysDictDataController  extends BaseController {
 
   @Get('/type/:dictType')
   @ApiOperation({ summary: '根据字典类型查询字典数据信息' })
-  @PreAuthorize('hasPermi("system:dict:query")')
   async dictType(@Param('dictType') dictType: string) {
     const data = await this.dictTypeService.selectDictDataByType(dictType);
     return AjaxResult.success(data || []);

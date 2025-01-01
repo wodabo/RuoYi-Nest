@@ -20,6 +20,8 @@ import { Public } from '~/ruoyi-framework/auth/decorators/public.decorator';
 import { PreAuthorize } from '~/ruoyi-share/annotation/PreAuthorize';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { ExcelUtils } from '~/ruoyi-share/utils/excel.utils';
+import { BusinessType } from '~/ruoyi-share/enums/BusinessType';
+import { Log } from '~/ruoyi-share/annotation/Log';
 
 @ApiTags('数据字典信息')
 @Controller('/system/dict/type')
@@ -48,6 +50,7 @@ export class SysDictTypeController extends BaseController   {
   }
 
   
+  @Log({ title: '字典类型', businessType: BusinessType.CLEAN })
   @Delete('/refreshCache')
   @ApiOperation({ summary: '刷新字典缓存' })
   @PreAuthorize('hasPermi("system:dict:remove")')
@@ -56,6 +59,7 @@ export class SysDictTypeController extends BaseController   {
     return AjaxResult.success();
   }
 
+  @Log({ title: '字典类型', businessType: BusinessType.EXPORT })
   @Post('/export')
   @ApiOperation({ summary: '导出字典类型' })
   @PreAuthorize('hasPermi("system:dict:export")')
@@ -75,6 +79,7 @@ export class SysDictTypeController extends BaseController   {
     return AjaxResult.success(data);
   }
 
+  @Log({ title: '字典类型', businessType: BusinessType.INSERT })
   @Post()
   @ApiOperation({ summary: '新增字典类型' })
   @PreAuthorize('hasPermi("system:dict:add")')
@@ -84,6 +89,7 @@ export class SysDictTypeController extends BaseController   {
     return AjaxResult.success(result);
   }
 
+  @Log({ title: '字典类型', businessType: BusinessType.UPDATE })
   @Put()
   @ApiOperation({ summary: '修改保存字典类型' })
   @PreAuthorize('hasPermi("system:dict:edit")')
@@ -92,6 +98,7 @@ export class SysDictTypeController extends BaseController   {
     return AjaxResult.success(result);
   }
 
+  @Log({ title: '字典类型', businessType: BusinessType.DELETE })
   @Delete('/:dictIds')
   @ApiOperation({ summary: '删除字典类型' })
   @PreAuthorize('hasPermi("system:dict:remove")')

@@ -52,12 +52,32 @@ export class SqlUtils
         {
             return;
         }
-        const sqlKeywords = value.split(SqlUtils.SQL_REGEX);
+
+
+        const sqlKeywords = SqlUtils.SQL_REGEX.split('\\|');
+
         sqlKeywords.forEach((sqlKeyword) => {
             if (value.toLowerCase().indexOf(sqlKeyword.toLowerCase()) > -1)
             {
                 throw new UtilException("参数存在SQL注入风险");
             }
         });
+
+
+    }
+
+    /**
+     * 解析sql语句中的表名字
+     */
+    public parseTableNames(sql: string): string[] {
+        const dropTableStatementList = sql.match(/drop.*table.*;/g) || []
+        const createTableStatementList = sql.match(/create.*table.*/g) || []
+        const tableNames = dropTableStatementList.map(d => {
+            return d.slice(d.lastIndexOf(' ')+1,-1).trim()
+        }).concat(createTableStatementList.map(d => {
+            const _d = d.slice(0,d.lastIndexOf(' '))
+            return _d.slice(_d.lastIndexOf(' ')).trim()
+        }))
+        return [...new Set(tableNames)]
     }
 }

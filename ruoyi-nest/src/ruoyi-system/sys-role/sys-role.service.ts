@@ -45,10 +45,7 @@ export class SysRoleService {
     return this.roleRepository.selectRoleList(query);
   }
 
-  async selectRoleById(roleId: number): Promise<SysRole> {
-    return this.roleRepository.selectRoleById(roleId);
-  }
-
+  
   async selectRolesByUserId(userId: number, loginUser?: LoginUser): Promise<SysRole[]> {
     const userRoles = await this.roleRepository.selectRolePermissionByUserId(userId);
     const roles = await this.selectRoleAll();
@@ -75,15 +72,27 @@ export class SysRoleService {
     return perms;
   }
 
+  
   async selectRoleAll(): Promise<SysRole[]> {
     const [roles, total] = await this.selectRoleList(new SysRole());
     return roles;
   }
 
-  // async selectRoleListByUserId(userId: number): Promise<number[]> {
-  //   const roles = await this.selectRolesByUserId(userId);
-  //   return roles.map(role => role.roleId);
-  // }
+
+  /**
+     * 根据用户ID获取角色选择框列表
+     * 
+     * @param userId 用户ID
+     * @return 选中角色ID列表
+     */
+  async selectRoleListByUserId(userId: number): Promise<number[]> {
+    return this.roleRepository.selectRoleListByUserId(userId);
+  }
+
+  
+  async selectRoleById(roleId: number): Promise<SysRole> {
+    return this.roleRepository.selectRoleById(roleId);
+  }
 
   async checkRoleNameUnique(role: SysRole): Promise<boolean> {
     const roleId = role.roleId ? role.roleId : -1;
@@ -130,6 +139,18 @@ export class SysRoleService {
     }
   }
 
+  
+  /**
+   * 通过角色ID查询角色使用数量
+   * 
+   * @param roleId 角色ID
+   * @return 结果
+   */
+  async countUserRoleByRoleId(roleId: number): Promise<number> {
+    return this.userRoleRepository.countUserRoleByRoleId(roleId);
+  }
+
+
   @Transactional()
   async insertRole(role: SysRole): Promise<number> {
     // 新增角色信息
@@ -138,6 +159,93 @@ export class SysRoleService {
     // 新增角色与菜单关联
     return this.insertRoleMenu(role);
   }
+
+  
+  @Transactional()
+  async updateRole(role: SysRole): Promise<number> {
+
+    await this.roleRepository.updateRole(role);
+    await this.roleMenuRepository.deleteRoleMenuByRoleId(role.roleId);
+    return this.insertRoleMenu(role);
+  }
+
+    /**
+   * 修改角色状态
+   * 
+   * @param role 角色信息
+   * @return 结果
+   */
+    async updateRoleStatus(role: SysRole): Promise<number> {
+      return this.roleRepository.updateRole(role);
+    }
+
+      /**
+* 修改数据权限信息
+* 
+* @param role 角色信息
+* @return 结果
+*/
+  @Transactional()
+  async authDataScope(role: SysRole): Promise<number> {
+    // 修改角色信息
+    await this.roleRepository.updateRole(role);
+    // 删除角色与部门关联
+    await this.roleDeptRepository.deleteRoleDeptByRoleId(role.roleId);
+    // 新增角色和部门信息（数据权限）
+    return this.insertRoleDept(role);
+  }
+
+  
+
+  @Transactional()
+  async deleteRoleByIds(roleIds: number[]): Promise<number> {
+    let count = 0;
+    for (const roleId of roleIds) {
+      const role = new SysRole();
+      role.roleId = roleId;
+      this.checkRoleAllowed(role);
+      await this.checkRoleDataScope([roleId]);
+
+
+      if (await this.countUserRoleByRoleId(roleId) > 0) {
+        throw new ServiceException(`${role.roleName}已分配,不能删除`);
+      }
+
+
+    }
+
+    // 删除角色与菜单关联
+    await this.roleMenuRepository.deleteRoleMenu(roleIds);
+    // 删除角色与部门关联
+    await this.roleDeptRepository.deleteRoleDept(roleIds);
+    count = await this.roleRepository.deleteRoleByIds(roleIds);
+    return count;
+  }
+
+  
+
+     /**
+     * 取消授权用户角色
+     * 
+     * @param userRole 用户和角色关联信息
+     * @return 结果
+     */
+     public deleteAuthUser(userRole:SysUserRole):Promise<number>
+     {
+         return this.userRoleRepository.deleteUserRoleInfo(userRole);
+     }
+ 
+     /**
+      * 批量取消授权用户角色
+      * 
+      * @param roleId 角色ID
+      * @param userIds 需要取消授权的用户数据ID
+      * @return 结果
+      */
+     public deleteAuthUsers(roleId:number, userIds:number[]):Promise<number>
+     {
+         return this.userRoleRepository.deleteUserRoleInfos(roleId, userIds);
+     }
 
   /**
      * 新增角色菜单信息
@@ -178,101 +286,7 @@ export class SysRoleService {
     return rows;
   }
 
-  @Transactional()
-  async updateRole(role: SysRole): Promise<number> {
 
-    await this.roleRepository.updateRole(role);
-    await this.roleMenuRepository.deleteRoleMenuByRoleId(role.roleId);
-    return this.insertRoleMenu(role);
-  }
-
-
-  /**
-   * 修改角色状态
-   * 
-   * @param role 角色信息
-   * @return 结果
-   */
-  async updateRoleStatus(role: SysRole): Promise<number> {
-    return this.roleRepository.updateRole(role);
-  }
-
-
-  /**
-* 修改数据权限信息
-* 
-* @param role 角色信息
-* @return 结果
-*/
-  @Transactional()
-  async authDataScope(role: SysRole): Promise<number> {
-    // 修改角色信息
-    await this.roleRepository.updateRole(role);
-    // 删除角色与部门关联
-    await this.roleDeptRepository.deleteRoleDeptByRoleId(role.roleId);
-    // 新增角色和部门信息（数据权限）
-    return this.insertRoleDept(role);
-  }
-
-  /**
-   * 通过角色ID查询角色使用数量
-   * 
-   * @param roleId 角色ID
-   * @return 结果
-   */
-  async countUserRoleByRoleId(roleId: number): Promise<number> {
-    return this.userRoleRepository.countUserRoleByRoleId(roleId);
-  }
-
-  @Transactional()
-  async deleteRoleByIds(roleIds: number[]): Promise<number> {
-    let count = 0;
-    for (const roleId of roleIds) {
-      const role = new SysRole();
-      role.roleId = roleId;
-      this.checkRoleAllowed(role);
-      await this.checkRoleDataScope([roleId]);
-
-
-      if (await this.countUserRoleByRoleId(roleId) > 0) {
-        throw new ServiceException(`${role.roleName}已分配,不能删除`);
-      }
-
-
-    }
-
-    // 删除角色与菜单关联
-    await this.roleMenuRepository.deleteRoleMenu(roleIds);
-    // 删除角色与部门关联
-    await this.roleDeptRepository.deleteRoleDept(roleIds);
-    count = await this.roleRepository.deleteRoleByIds(roleIds);
-    return count;
-  }
-
-
-
-     /**
-     * 取消授权用户角色
-     * 
-     * @param userRole 用户和角色关联信息
-     * @return 结果
-     */
-     public deleteAuthUser(userRole:SysUserRole):Promise<number>
-     {
-         return this.userRoleRepository.deleteUserRoleInfo(userRole);
-     }
- 
-     /**
-      * 批量取消授权用户角色
-      * 
-      * @param roleId 角色ID
-      * @param userIds 需要取消授权的用户数据ID
-      * @return 结果
-      */
-     public deleteAuthUsers(roleId:number, userIds:number[]):Promise<number>
-     {
-         return this.userRoleRepository.deleteUserRoleInfos(roleId, userIds);
-     }
  
      /**
       * 批量选择授权用户角色

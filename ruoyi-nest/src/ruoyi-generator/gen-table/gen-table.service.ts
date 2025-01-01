@@ -118,6 +118,18 @@ export class GenTableService {
         await this.genTableColumnRepository.deleteGenTableColumnByIds(tableIds);
     }
 
+
+       /**
+     * 创建表
+     *
+     * @param sql 创建表语句
+     * @return 结果
+     */
+       public createTable(sql:string):Promise<boolean>
+       {
+           return this.genTableRepository.createTable(sql)
+       }
+
     /**
      * 导入表结构。
      * 
@@ -455,18 +467,4 @@ export class GenTableService {
     }
 
  
-    /**
-     * 获取代码生成路径。
-     * 
-     * @param table 业务表信息。
-     * @param template 模板文件路径。
-     * @return 生成路径。
-     */
-    // public static getGenPath(table: GenTable, template: string): string {
-    //     let genPath = table.genPath;
-    //     if (genPath === "/") {             
-    //         return System.getProperty("user.dir") + File.separator + "src" + File.separator + VelocityUtils.getFileName(template, table);
-    //     }
-    //     return genPath + File.separator + VelocityUtils.getFileName(template, table);
-    // }
 }

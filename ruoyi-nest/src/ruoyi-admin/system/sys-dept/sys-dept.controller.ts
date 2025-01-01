@@ -5,6 +5,9 @@ import { SysDept } from '~/ruoyi-system/sys-dept/entities/sys-dept.entity';
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { AjaxResult } from '~/ruoyi-share/response/ajax-result';
+import { PreAuthorize } from '~/ruoyi-share/annotation/PreAuthorize';
+import { Log } from '~/ruoyi-share/annotation/Log';
+import { BusinessType } from '~/ruoyi-share/enums/BusinessType';
 
 @ApiTags('部门管理')
 @Controller('system/dept')
@@ -14,6 +17,7 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '获取部门列表' })
+  @PreAuthorize('hasPermi("system:dept:list")') 
   @Get('list')
   async list(@Query() query: SysDept, @Request() req): Promise<AjaxResult> {
     const [list, total] = await this.sysDeptService.selectDeptList(query); 
@@ -21,6 +25,7 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '查询部门列表（排除节点）' })
+  @PreAuthorize('hasPermi("system:dept:list")')
   @Get('list/exclude/:deptId')
   async excludeChild(@Param('deptId') deptId: string): Promise<AjaxResult> {
     const [list, _total] = await this.sysDeptService.selectDeptList(new SysDept());
@@ -29,6 +34,7 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '根据部门编号获取详细信息' })
+  @PreAuthorize('hasPermi("system:dept:query")')
   @Get(':deptId')
   async getInfo(@Param('deptId') deptId: string): Promise<AjaxResult> {
     await this.sysDeptService.checkDeptDataScope(+deptId);
@@ -37,6 +43,8 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '新增部门' })
+  @PreAuthorize('hasPermi("system:dept:add")')
+  @Log({ title: '部门管理', businessType: BusinessType.INSERT })
   @Post()
   async add(@Body() dept: SysDept, @Request() req): Promise<AjaxResult> {
     const loginUser = req.user;
@@ -49,6 +57,8 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '修改部门' })
+  @PreAuthorize('hasPermi("system:dept:edit")')
+  @Log({ title: '部门管理', businessType: BusinessType.UPDATE })
   @Put()
   async edit(@Body() dept: SysDept, @Request() req): Promise<AjaxResult> {
     const loginUser = req.user;
@@ -68,6 +78,8 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '删除部门' })
+  @PreAuthorize('hasPermi("system:dept:remove")')
+  @Log({ title: '部门管理', businessType: BusinessType.DELETE })
   @Delete(':deptId')
   async remove(@Param('deptId') deptId: string): Promise<AjaxResult> {
     if (await this.sysDeptService.hasChildByDeptId(+deptId)) {

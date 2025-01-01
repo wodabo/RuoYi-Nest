@@ -65,13 +65,14 @@ export class GlobalAuthGuard extends AuthGuard('jwt') {
     return null;
 }
 
-  private evaluatePermission(expression: string, user: any): boolean {
+  private evaluatePermission(expression: string, loginUser: any): boolean {
     // 支持多种表达式格式
     // hasRole('admin')
     // hasAnyRole('admin','user')
     // hasPermission('system:user:list')
     // hasAnyPermission('system:user:list','system:user:query')
 
+    const user = loginUser.user
 
     const matches = {
       hasRole: /hasRole\(['"](.+)['"]\)/.exec(expression),
@@ -80,7 +81,6 @@ export class GlobalAuthGuard extends AuthGuard('jwt') {
       hasPermissions: /hasPermissions\(['"](.+)['"]\)/.exec(expression),
       hasAnyPermi: /hasAnyPermi\(['"](.+)['"]\)/.exec(expression),
     };
-
 
     if (matches.hasRole) {
       const role = matches.hasRole[1];
@@ -96,22 +96,24 @@ export class GlobalAuthGuard extends AuthGuard('jwt') {
       const [permission] = this.getParams(expression);
       // const permission = matches.hasPermi[1];
       // return user.permissions?.includes(permission);
-      return this.permissionValidatorService.hasPermi(permission,user);
+      return this.permissionValidatorService.hasPermi(permission,loginUser);
     }
 
     if (matches.hasAnyPermi) {
       const permissions = matches.hasAnyPermi[1].split(',').map(p => p.trim().replace(/'/g, ''));
-      return user.permissions?.some(p => permissions.includes(p));
+      return loginUser.permissions?.some(p => permissions.includes(p));
     }
     
 
-    return this.permissionValidatorService.hasPermissions(user.permissions,'');
+    // return this.permissionValidatorService.hasPermissions(loginUser.permissions,'');
+    // 如果都没匹配到，则返回true
+    return true;
   }
 
-  handleRequest(err, user, info) {
+  handleRequest(err, loginUser, info) {
 
     // You can throw an exception based on either "info" or "err" arguments
-    if (err || !user) {
+    if (err || !loginUser) {
       throw err || new UnauthorizedException();
     }
 
@@ -122,12 +124,12 @@ export class GlobalAuthGuard extends AuthGuard('jwt') {
 
 
     if(requiredPermission){
-      if(!this.evaluatePermission(requiredPermission,user)){
+      if(!this.evaluatePermission(requiredPermission,loginUser)){
         throw new ForbiddenException();
       }
     }
 
   
-    return user;
+    return loginUser;
   }
 }

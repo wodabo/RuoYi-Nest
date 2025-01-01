@@ -45,7 +45,8 @@ export class GenController extends BaseController {
     private readonly genTableService: GenTableService,
     private readonly genTableColumnService: GenTableColumnService,
     private readonly fileUtils: FileUtils,
-    private readonly ruoYiConfigService: RuoYiConfigService
+    private readonly ruoYiConfigService: RuoYiConfigService,
+    private readonly sqlUtils: SqlUtils,  
   ) {
     super();
   }
@@ -132,33 +133,26 @@ export class GenController extends BaseController {
     return this.success();
   }
 
-  // @PreAuthorize('hasRole("admin")')
-  // @Log({ title: '创建表', businessType: BusinessType.OTHER })
-  // @Post('createTable')
-  // @ApiOperation({ summary: '创建表' })
-  // async createTableSave(@Body() sql: string, @Request() req) {
-  //   try {   
-  //     this.sqlUtils.filterKeyword(sql);
-  //     const sqlStatements = this.sqlUtils.parseStatements(sql, DbType.mysql);
-  //     const tableNames = [];
-  //     for (const sqlStatement of sqlStatements) {
-  //       if (sqlStatement instanceof MySqlCreateTableStatement) {
-  //         const createTableStatement = sqlStatement as MySqlCreateTableStatement;
-  //         if (await this.genTableService.createTable(createTableStatement.toString())) {
-  //           const tableName = createTableStatement.getTableName().replaceAll('`', '');
-  //           tableNames.push(tableName);
-  //         }
-  //       }
-  //     }
-  //     const tableList = await this.genTableService.selectDbTableListByNames(tableNames.toArray(new string[tableNames.size()]));
-  //     const operName = this.securityUtils.getUsername(req.user);
-  //     await this.genTableService.importGenTable(tableList, operName);
-  //     return this.success(req);
-  //   } catch (e) {
-  //     this.logger.error(e.getMessage(), e);
-  //     return this.error('创建表结构异常', req);
-  //   }
-  // }
+  @PreAuthorize('hasRole("admin")')
+  @Log({ title: '创建表', businessType: BusinessType.OTHER })
+  @Post('createTable')
+  @ApiOperation({ summary: '创建表' })
+  async createTableSave(@Query('sql') sql: string, @Request() req) {
+    const loginUser = req.user
+    try {   
+      this.sqlUtils.filterKeyword(sql);
+
+      const tableNames = this.sqlUtils.parseTableNames(sql);
+
+      await this.genTableService.createTable(sql)
+      const tableList = await this.genTableService.selectDbTableListByNames(tableNames);
+      const operName = loginUser.getUsername();
+      await this.genTableService.importGenTable(tableList, operName);
+      return this.success();
+    } catch (e) {
+      return this.error('创建表结构异常');
+    }
+  }
 
   @PreAuthorize('hasPermi("tool:gen:edit")')
   @Log({ title: '代码生成', businessType: BusinessType.UPDATE })

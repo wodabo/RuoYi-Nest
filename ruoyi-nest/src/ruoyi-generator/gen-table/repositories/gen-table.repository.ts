@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Repository, EntityManager, DataSource } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { GenTable } from '~/ruoyi-generator/gen-table/entities/gen-table.entity';
 import { GenTableColumn } from '~/ruoyi-generator/gen-table-column/entities/gen-table-column.entity';
 import { QueryUtils } from '~/ruoyi-share/utils/query.utils';
 import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
 import { ContextHolderUtils } from '~/ruoyi-share/utils/context-holder.utils';
 import { plainToClass, plainToInstance } from 'class-transformer';
+
 
 @Injectable()
 export class GenTableRepository {
@@ -15,10 +16,10 @@ export class GenTableRepository {
         @InjectRepository(GenTable)
         private readonly tableRepository: Repository<GenTable>,
         private readonly queryUtils: QueryUtils,
-        private readonly sqlLoggerUtils: SqlLoggerUtils,    
+        private readonly sqlLoggerUtils: SqlLoggerUtils,
         private readonly contextHolderUtils: ContextHolderUtils,
-        private readonly dataSource: DataSource, 
-    ) {}
+        private readonly dataSource: DataSource,
+    ) { }
 
 
 
@@ -49,8 +50,8 @@ export class GenTableRepository {
                 't.remark'
             ])
     }
- 
-    async selectGenTableList(table: GenTable): Promise<[GenTable[],number]> {
+
+    async selectGenTableList(table: GenTable): Promise<[GenTable[], number]> {
         const queryBuilder = this.selectGenTableVo()
 
         if (table.tableName) {
@@ -65,8 +66,8 @@ export class GenTableRepository {
             queryBuilder.andWhere('date_format(t.createTime,\'%Y%m%d\') BETWEEN date_format(:beginTime,\'%Y%m%d\') AND date_format(:endTime,\'%Y%m%d\')', { beginTime: table.params.beginTime, endTime: table.params.endTime });
         }
 
-        this.sqlLoggerUtils.log(queryBuilder,'selectGenTableList');
-        
+        this.sqlLoggerUtils.log(queryBuilder, 'selectGenTableList');
+
         const [rows, len] = await this.queryUtils.executeQuery(queryBuilder, table);
         return [rows, len];
     }
@@ -86,33 +87,33 @@ export class GenTableRepository {
             AND ist.table_name NOT LIKE 'gen_%' 
             AND ist.table_name NOT IN (SELECT t.table_name FROM gen_table t)
         `;
-        
+
         if (table.tableName) {
             query += ` AND lower(ist.table_name) LIKE lower(?)`;
             params.push(`%${table.tableName}%`);
         }
-        
+
         if (table.tableComment) {
             query += ` AND lower(ist.table_comment) LIKE lower(?)`;
             params.push(`%${table.tableComment}%`);
         }
-        
+
         if (table.params?.beginTime) {
             query += ` AND date_format(ist.create_time,'%Y%m%d') >= date_format(?,'%Y%m%d')`;
             params.push(table.params.beginTime);
         }
-        
+
         if (table.params?.endTime) {
             query += ` AND date_format(ist.create_time,'%Y%m%d') <= date_format(?,'%Y%m%d')`;
             params.push(table.params.endTime);
         }
-        
+
         query += ` ORDER BY ist.create_time DESC`;
 
         this.sqlLoggerUtils.log(null, 'selectDbTableList');
 
         const result = await dataSource.query(query, params);
-   
+
         const rows = result.map(row => this.tableRepository.create(row));
         const total = rows.length;
         return [rows, total];
@@ -144,7 +145,7 @@ export class GenTableRepository {
 
         this.sqlLoggerUtils.log(null, `selectDbTableListByNames`);
 
-   
+
         const rows = result.map(row => this.tableRepository.create(row));
         return rows;
     }
@@ -157,55 +158,55 @@ export class GenTableRepository {
 
         this.sqlLoggerUtils.log(queryBuilder, 'selectGenTableByName');
 
-        return queryBuilder.getOne();  
+        return queryBuilder.getOne();
     }
 
     async selectGenTableById(tableId: number): Promise<GenTable> {
         const queryBuilder = this.tableRepository.createQueryBuilder('t')
             .select([
-                't.tableId', 
-                't.tableName', 
-                't.tableComment', 
-                't.subTableName', 
-                't.subTableFkName', 
-                't.className', 
-                't.tplCategory', 
-                't.tplWebType', 
-                't.packageName', 
-                't.moduleName', 
-                't.businessName', 
-                't.functionName', 
-                't.functionAuthor', 
-                't.genType', 
-                't.genPath', 
-                't.options', 
+                't.tableId',
+                't.tableName',
+                't.tableComment',
+                't.subTableName',
+                't.subTableFkName',
+                't.className',
+                't.tplCategory',
+                't.tplWebType',
+                't.packageName',
+                't.moduleName',
+                't.businessName',
+                't.functionName',
+                't.functionAuthor',
+                't.genType',
+                't.genPath',
+                't.options',
                 't.remark',
-                'c.columnId', 
-                'c.columnName', 
-                'c.columnComment', 
-                'c.columnType', 
-                'c.tsType', 
-                'c.tsField', 
-                'c.isPk', 
-                'c.isIncrement', 
-                'c.isRequired', 
-                'c.isInsert', 
-                'c.isEdit', 
-                'c.isList', 
-                'c.isQuery', 
-                'c.queryType', 
-                'c.htmlType', 
-                'c.dictType', 
+                'c.columnId',
+                'c.columnName',
+                'c.columnComment',
+                'c.columnType',
+                'c.tsType',
+                'c.tsField',
+                'c.isPk',
+                'c.isIncrement',
+                'c.isRequired',
+                'c.isInsert',
+                'c.isEdit',
+                'c.isList',
+                'c.isQuery',
+                'c.queryType',
+                'c.htmlType',
+                'c.dictType',
                 'c.sort'
             ])
-            .leftJoinAndMapMany('t.columns', 'gen_table_column', 'c', 't.tableId = c.tableId') 
+            .leftJoinAndMapMany('t.columns', 'gen_table_column', 'c', 't.tableId = c.tableId')
             .where('t.tableId = :tableId', { tableId })
             .orderBy('c.sort', 'ASC');
 
         this.sqlLoggerUtils.log(queryBuilder, 'selectGenTableById');
-        
+
         const result = await queryBuilder.getOne();
-    
+
         // 显式触发转换
         return plainToInstance(GenTable, result, {
             enableImplicitConversion: true
@@ -236,6 +237,15 @@ export class GenTableRepository {
 
         const result = await queryBuilder.execute();
         return result.affected;
+    }
+
+    async createTable(sql: string): Promise<boolean> {
+        try {
+            await this.dataSource.query(sql);
+            return true
+        } catch (error) {
+            return false
+        }
     }
 
     async updateGenTable(table: GenTable): Promise<number> {
@@ -352,7 +362,7 @@ export class GenTableRepository {
 
         const queryBuilder = entityManager.createQueryBuilder()
             .insert()
-            .into(GenTable,Object.keys(insertObject))
+            .into(GenTable, Object.keys(insertObject))
             .values(insertObject);
 
         this.sqlLoggerUtils.log(queryBuilder, 'insertGenTable');
@@ -369,7 +379,7 @@ export class GenTableRepository {
             .orderBy('c.sort', 'ASC');
 
         this.sqlLoggerUtils.log(queryBuilder, 'selectGenTableAll');
-        
+
         const rows = await queryBuilder.getMany();
         return rows;
     }

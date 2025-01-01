@@ -21,8 +21,8 @@ export class DemoModeGuard implements CanActivate {
     const method = request.method;
     const url = request.url;
 
-    // 允许 logout 操作通过
-    if (url.includes('/logout')) {
+    // 允许 logout， login 操作通过
+    if (url.includes('/logout') || url.includes('/login')) {
       return true;
     }
 

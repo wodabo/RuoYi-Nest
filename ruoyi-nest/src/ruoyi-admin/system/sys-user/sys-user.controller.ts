@@ -15,7 +15,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Request,
-  ValidationPipe
+  ValidationPipe,
+  ParseArrayPipe
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -42,7 +43,6 @@ import { SysDept } from '~/ruoyi-system/sys-dept/entities/sys-dept.entity';
 
 @ApiTags('用户管理')
 @Controller('system/user')
-// @UseGuards(AuthGuard('jwt'))
 export class SysUserController extends BaseController {
   constructor(
     private readonly userService: SysUserService,
@@ -87,16 +87,15 @@ export class SysUserController extends BaseController {
   async importData(@UploadedFile() file, @Body('updateSupport') updateSupport: boolean, @Request() req) {
     const loginUser = req.user;
     const userList = await this.excelUtils.importExcel(file.buffer, SysUser);
-    const message = await this.userService.importUser(userList, updateSupport, req.user.username);
-    console.log(userList,'userList')
+    const message = await this.userService.importUser(userList, updateSupport, loginUser.getUsername());
     return AjaxResult.success(message);
   }
 
-  // @Post('importTemplate')
-  // @ApiOperation({ summary: '下载导入模板' })
-  // async importTemplate(@Res() res) {
-  //   // Implement template download logic here
-  // }
+  @Post('importTemplate')
+  @ApiOperation({ summary: '下载导入模板' })
+  async importTemplate(@Res() res) {
+    await this.excelUtils.importTemplateExcel(res,'用户数据',SysUser);
+  }
 
   @Get('profile')
   @ApiOperation({ summary: '获取个人信息' })
@@ -265,13 +264,12 @@ export class SysUserController extends BaseController {
   @Delete(':userIds')
   @ApiOperation({ summary: '删除用户' })
   @Log({ title: '用户管理', businessType: BusinessType.DELETE })
-  async remove(@Param('userIds') userIds: string,@Request() req) {
+  async remove(@Param('userIds',new ParseArrayPipe({ items: Number, separator: ',' })) userIds: number[],@Request() req) {
     const loginUser = req.user;
-    const userIdArray = userIds.split(',').map(id => parseInt(id));
-    if (userIdArray.includes(loginUser.userId)) {
+    if (userIds.includes(loginUser.userId)) {
       return AjaxResult.error('当前用户不能删除');
     }
-    return AjaxResult.success(await this.userService.deleteUserByIds(userIdArray,loginUser));
+    return AjaxResult.success(await this.userService.deleteUserByIds(userIds,loginUser));
   }
 
   @PreAuthorize("hasPermi('system:user:resetPwd')")
@@ -318,19 +316,11 @@ export class SysUserController extends BaseController {
   @Put('authRole')
   @ApiOperation({ summary: '用户授权角色' })
   @Log({ title: '用户管理', businessType: BusinessType.GRANT })
-  async insertAuthRole(@Query('userId', ParseIntPipe) userId: number, @Query('roleIds') roleIds: number[], @Request() req) {
-    const loginUser = req.user;
-
-    // await this.userService.checkUserDataScope(userId, loginUser);
-    // await this.roleService.checkRoleDataScope(roleIds, loginUser);
-    // await this.userService.insertUserAuth(userId, roleIds);
+  async insertAuthRole(@Query('userId', ParseIntPipe) userId: number, @Query('roleIds',new ParseArrayPipe({ items: Number, separator: ',' })) roleIds: number[], @Request() req) {
+    await this.userService.checkUserDataScope(userId);
+    await this.roleService.checkRoleDataScope(roleIds);
+    await this.userService.insertUserAuth(userId, roleIds);  
     return AjaxResult.success();
   }
 
-
-
-  // private async parseExcel(file: any): Promise<any[]> {
-  //   // Implement Excel parsing logic here
-  //   return [];
-  // }
 }

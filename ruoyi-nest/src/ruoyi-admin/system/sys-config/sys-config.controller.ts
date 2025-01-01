@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, Request, UseGuards, UseInterceptors, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, Request, UseGuards, UseInterceptors, ParseIntPipe, DefaultValuePipe, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { SysConfigService } from '~/ruoyi-system/sys-config/sys-config.service';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
@@ -103,8 +103,8 @@ export class SysConfigController extends BaseController {
   @PreAuthorize('hasPermi("system:config:remove")')
   @Log({ title: '参数管理', businessType: BusinessType.DELETE })
   @Delete(':configIds')
-  async remove(@Param('configIds') configIds: string) {
-    await this.configService.deleteConfigByIds(configIds.split(',').map(id => +id));
+  async remove(@Param('configIds',new ParseArrayPipe({ items: Number, separator: ',' })) configIds: number[]) {
+    await this.configService.deleteConfigByIds(configIds);
     return this.success();
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, Res, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query, Res, Request, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { SysLogininfor } from '~/ruoyi-system/sys-logininfor/entities/sys-logininfor.entity';
@@ -77,8 +77,8 @@ export class SysLogininforController extends BaseController {
   @PreAuthorize('hasPermi("monitor:logininfor:remove")')
   @Log({ title: '登录日志', businessType: BusinessType.DELETE })
   @Delete(':infoIds')
-  async remove(@Param('infoIds') infoIds: string) {
-    await this.logininforService.deleteLogininforByIds(infoIds.split(',').map(id => +id));
+  async remove(@Param('infoIds',new ParseArrayPipe({ items: Number, separator: ',' })) infoIds: number[]) {
+    await this.logininforService.deleteLogininforByIds(infoIds);
     return this.success();
   }
 

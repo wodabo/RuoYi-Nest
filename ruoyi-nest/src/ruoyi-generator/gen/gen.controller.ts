@@ -13,7 +13,8 @@ import {
   DefaultValuePipe,
   Request,
   ValidationPipe,
-  Put
+  Put,
+  ParseArrayPipe
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -173,9 +174,8 @@ export class GenController extends BaseController {
   @Log({ title: '代码生成', businessType: BusinessType.DELETE })
   @Delete(':tableIds')
   @ApiOperation({ summary: '删除表' })
-  async remove(@Param('tableIds') tableIds: string, @Request() req) {
-    const tableIdArray = tableIds.split(',').map(id => parseInt(id));
-    await this.genTableService.deleteGenTableByIds(tableIdArray);
+  async remove(@Param('tableIds',new ParseArrayPipe({ items: Number, separator: ',' })) tableIds: number[], @Request() req) {
+    await this.genTableService.deleteGenTableByIds(tableIds);
     return this.success();
   }
 

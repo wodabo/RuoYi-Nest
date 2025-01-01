@@ -15,7 +15,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Request,
-  ValidationPipe
+  ValidationPipe,
+  ParseArrayPipe
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -114,7 +115,7 @@ export class SysJobController extends BaseController {
   @Delete(':jobIds')
   @ApiOperation({ summary: '删除定时任务' })
   @Log({ title: '定时任务', businessType: BusinessType.DELETE })
-  async remove(@Param('jobIds') jobIds: string) {
-    return AjaxResult.success(await this.jobService.deleteJobByIds(jobIds.split(',').map(Number)));
+  async remove(@Param('jobIds',new ParseArrayPipe({ items: Number, separator: ',' })) jobIds: number[]) {
+    return AjaxResult.success(await this.jobService.deleteJobByIds(jobIds));
   }
 }

@@ -14,6 +14,7 @@ import {
   ParseIntPipe,
   ValidationPipe,
   Query,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { SysDictDataService } from '~/ruoyi-system/sys-dict-data/sys-dict-data.service';
@@ -105,8 +106,8 @@ export class SysDictDataController  extends BaseController {
   @ApiOperation({ summary: '删除字典类型' })
   @Log({ title: '字典类型', businessType: BusinessType.DELETE })
   @PreAuthorize('hasPermi("system:dict:remove")')
-  async remove(@Param('dictCodes') dictCodes: string, @Request() req) {
-    await this.dictDataService.deleteDictDataByIds(dictCodes.split(',').map(Number));
+  async remove(@Param('dictCodes',new ParseArrayPipe({ items: Number, separator: ',' })) dictCodes: number[], @Request() req) {
+    await this.dictDataService.deleteDictDataByIds(dictCodes);
     return AjaxResult.success();
   }
 }

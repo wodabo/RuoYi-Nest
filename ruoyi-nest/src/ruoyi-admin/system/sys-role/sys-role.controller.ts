@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res,Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res,Request, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SysRoleService } from '~/ruoyi-system/sys-role/sys-role.service';
 import { SysRole } from '~/ruoyi-system/sys-role/entities/sys-role.entity';
@@ -137,8 +137,8 @@ export class SysRoleController extends BaseController {
   @Log({ title: '角色管理', businessType: BusinessType.DELETE })
   @ApiOperation({ summary: '删除角色' })
   @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
-  async remove(@Param('roleIds') roleIds: string): Promise<AjaxResult> {
-    return AjaxResult.success(await this.roleService.deleteRoleByIds(roleIds.split(',').map(id => +id)));
+  async remove(@Param('roleIds',new ParseArrayPipe({ items: Number, separator: ',' })) roleIds: number[]): Promise<AjaxResult> {
+    return AjaxResult.success(await this.roleService.deleteRoleByIds(roleIds));
   }
 
   @PreAuthorize('hasPermi("system:role:query")')  

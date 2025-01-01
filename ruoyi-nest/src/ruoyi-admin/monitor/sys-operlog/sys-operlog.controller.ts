@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, Res, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query, Res, Request, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { SysOperlogService } from '~/ruoyi-system/sys-operlog/sys-operlog.service';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
@@ -79,8 +79,8 @@ export class SysOperlogController extends BaseController {
   @PreAuthorize('hasPermi("monitor:operlog:remove")')
   @Log({ title: '操作日志', businessType: BusinessType.DELETE })
   @Delete(':operIds')
-  async remove(@Param('operIds') operIds: string) {
-    await this.operlogService.deleteOperLogByIds(operIds.split(',').map(id => +id));
+  async remove(@Param('operIds',new ParseArrayPipe({ items: Number, separator: ',' })) operIds: number[]) {
+    await this.operlogService.deleteOperLogByIds(operIds);
     return this.success();
   }
 }

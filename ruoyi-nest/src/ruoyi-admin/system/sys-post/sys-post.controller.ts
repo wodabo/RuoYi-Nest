@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseGuards, Res, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseGuards, Res, DefaultValuePipe, ParseIntPipe, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SysPostService } from '~/ruoyi-system/sys-post/sys-post.service';
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
@@ -85,8 +85,8 @@ export class SysPostController extends BaseController  {
   @ApiOperation({ summary: '删除岗位' })
   @ApiResponse({ status: 200, type: AjaxResult })
   @Delete(':postIds')
-  async remove(@Param('postIds') postIds: string): Promise<AjaxResult> {
-    const result = await this.postService.deletePostByIds(postIds.split(',').map(id => +id));
+  async remove(@Param('postIds',new ParseArrayPipe({ items: Number, separator: ',' })) postIds: number[]): Promise<AjaxResult> {
+    const result = await this.postService.deletePostByIds(postIds);
     return AjaxResult.success(result);
   }
 

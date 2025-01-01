@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Request, ParseArrayPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { SysNoticeService } from '~/ruoyi-system/sys-notice/sys-notice.service';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
@@ -56,8 +56,8 @@ export class SysNoticeController extends BaseController {
   @PreAuthorize('hasPermi("system:notice:remove")')
   @Log({ title: '通知公告', businessType: BusinessType.DELETE })
   @Delete(':noticeIds')
-  async remove(@Param('noticeIds') noticeIds: string) {
-    const result = await this.noticeService.deleteNoticeByIds(noticeIds.split(',').map(id => +id));
+  async remove(@Param('noticeIds',new ParseArrayPipe({ items: Number, separator: ',' })) noticeIds: number[]) {
+    const result = await this.noticeService.deleteNoticeByIds(noticeIds);
     return this.toAjax(result);
   }
 }

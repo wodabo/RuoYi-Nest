@@ -10,6 +10,7 @@ import {
   HttpException,
   Query,
   Res,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { SysDictTypeService } from '~/ruoyi-system/sys-dict-type/sys-dict-type.service';
@@ -94,8 +95,8 @@ export class SysDictTypeController extends BaseController   {
   @Delete('/:dictIds')
   @ApiOperation({ summary: '删除字典类型' })
   @PreAuthorize('hasPermi("system:dict:remove")')
-  async remove(@Param('dictIds') dictIds: string) {
-    await this.dictTypeService.deleteDictTypeByIds(dictIds.split(',').map(Number));
+  async remove(@Param('dictIds',new ParseArrayPipe({ items: Number, separator: ',' })) dictIds: number[]) {
+    await this.dictTypeService.deleteDictTypeByIds(dictIds);
     return AjaxResult.success();
   }
 

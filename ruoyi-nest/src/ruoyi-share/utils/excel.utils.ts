@@ -8,6 +8,48 @@ import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ExcelUtils {
+  /**
+   * 对list数据源将其里面的数据导入到excel表单
+   * 
+   * @param sheetName 工作表的名称
+   * @param title 标题
+   * @return 结果
+   */
+  public async importTemplateExcel(res: Response, sheetName: string, clazz: any) {
+    // 创建工作簿
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(sheetName);
+
+
+    // 获取类的元数据
+    const excelFields = (Reflect.getMetadata('excel', clazz) || [])
+      .filter(field => field.options.isExport); // 过滤掉导入类型的字段
+
+    // 设置表头
+    const headers = excelFields.map(field => {
+      return {
+        header: field.options.name,
+        key: field.options.targetAttr || field.property,
+        width: field.options.width
+      };
+    });
+
+    worksheet.columns = headers;
+
+
+    // 设置响应头
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(sheetName) + '.xlsx'
+    );
+
+    // 写入响应
+    await workbook.xlsx.write(res);
+  }
 
   /**
    * 导出Excel
@@ -49,7 +91,7 @@ export class ExcelUtils {
         } else {
           value = item[field.property];
         }
-        
+
         // 处理不同的列类型
         if (field.options.cellType === ColumnType.NUMERIC) {
           row[field.options.targetAttr || field.property] = Number(value);
@@ -132,7 +174,7 @@ export class ExcelUtils {
 
       const item = new clazz();
       headerMap.forEach((field, columnIndex) => {
-        let value:any = row.getCell(columnIndex).value;
+        let value: any = row.getCell(columnIndex).value;
 
         // 处理超链接对象
         if (value && typeof value === 'object' && value.text) {
@@ -195,7 +237,7 @@ export class ExcelUtils {
     if (!row) {
       return true;
     }
-    const values:any = row.values;
+    const values: any = row.values;
     return values.every(value => !value);
   }
 }

@@ -90,8 +90,11 @@ export class SysDeptRepository {
       queryBuilder.orderBy('d.parentId', 'ASC')
         .addOrderBy('d.orderNum', 'ASC');
 
-      const result = await queryBuilder.getRawMany();
-      return result.map(item => item.d_deptId);
+
+      this.sqlLoggerUtils.log(queryBuilder, 'selectDeptListByRoleId');
+
+      const result = await queryBuilder.getMany();
+      return result.map(item => item.deptId);
     }
 
     async selectDeptById(deptId: number): Promise<SysDept> {

@@ -77,15 +77,15 @@ export class SysUserService {
         return this.userRepository.selectUserList(query);
     }
 
-    // @DataScope({ deptAlias: 'd', userAlias: 'u' })
-    // async selectAllocatedList(user: SysUser): Promise<SysUser[]> {
-    //     return this.userRepository.find({ where: user });
-    // }
+    @DataScope({ deptAlias: 'd', userAlias: 'u' })
+    async selectAllocatedList(user: SysUser): Promise<[SysUser[], number]> {
+        return this.userRepository.selectAllocatedList(user);    
+    }
 
-    // @DataScope({ deptAlias: 'd', userAlias: 'u' })
-    // async selectUnallocatedList(user: SysUser): Promise<SysUser[]> {
-    //     return this.userRepository.find({ where: user });
-    // }
+    @DataScope({ deptAlias: 'd', userAlias: 'u' })
+    async selectUnallocatedList(user: SysUser): Promise<[SysUser[], number]> {
+        return this.userRepository.selectUnallocatedList(user);
+    }
 
     async selectUserByUserName(userName: string): Promise<SysUser> {
         return this.userRepository.selectUserByUserName(userName);

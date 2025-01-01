@@ -64,11 +64,6 @@ export class SysLoginController {
     // 角色集合
     const roles = await this.permissionService.getRolePermission(loginUser);
 
-    
-    // 权限集合  
-    // const permissions = await this.permissionService.getMenuPermission(loginUser.user);
-
-
     return {
       code: 200,
       msg: 'success',

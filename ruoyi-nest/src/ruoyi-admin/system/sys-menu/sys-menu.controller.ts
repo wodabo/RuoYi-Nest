@@ -9,9 +9,8 @@ import { TreeUtils } from '~/ruoyi-share/utils/tree.utils';
 import { PreAuthorize } from '~/ruoyi-share/annotation/PreAuthorize';
 import { UserConstants } from '~/ruoyi-share/constant/UserConstants';
 import { StringUtils } from '~/ruoyi-share/utils/string.utils';
-// import { Log } from '~/ruoyi-share/decorators/log.decorator';  
-// import { PreAuthorize } from '~/ruoyi-share/decorators/preauthorize.decorator';
-// import { BusinessType } from '~/ruoyi-share/enums/business-type.enum';
+import { Log } from '~/ruoyi-share/annotation/Log';
+import { BusinessType } from '~/ruoyi-share/enums/BusinessType';
 
 @ApiTags('菜单管理')
 @Controller('system/menu')
@@ -80,7 +79,7 @@ export class SysMenuController extends BaseController {
   }
 
   @PreAuthorize("hasPermi('system:menu:add')")
-  // @Log({ title: '菜单管理', businessType: BusinessType.INSERT })
+  @Log({ title: '菜单管理', businessType: BusinessType.INSERT })  
   @Post()
   @ApiOperation({ summary: '新增菜单' })
   async add(@Body() menu: SysMenu,@Request() req): Promise<AjaxResult> {

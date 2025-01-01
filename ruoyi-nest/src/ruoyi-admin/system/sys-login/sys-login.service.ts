@@ -59,7 +59,6 @@ export class SysLoginService {
         const loginUser = new LoginUser();
         loginUser.user = sysUser;
 
-        // const user = await this.jwtStrategy.validate({username,password});
         this.logUtils.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success"));
         const token = await this.jwtAuthService.createToken(loginUser,request);
         return token;   

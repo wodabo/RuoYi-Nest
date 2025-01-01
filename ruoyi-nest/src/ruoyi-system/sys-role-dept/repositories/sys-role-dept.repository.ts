@@ -39,14 +39,15 @@ export class SysRoleDeptRepository {
     await queryBuilder.execute();
   }
 
-  async batchRoleDept(roleDepts: SysRoleDept[]): Promise<void> {
+  async batchRoleDept(roleDepts: SysRoleDept[]): Promise<number> {
     const queryBuilder = this.dataSource.createQueryBuilder()
       .insert()
       .into(SysRoleDept)
       .values(roleDepts);
 
     this.sqlLoggerUtils.log(queryBuilder, 'batchRoleDept');
-    await queryBuilder.execute();
+    const result = await queryBuilder.execute();
+    return result.identifiers[0].id;  
   }
 
 }

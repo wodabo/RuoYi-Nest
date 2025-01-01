@@ -19,15 +19,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-// import { AuthGuard } from '@nestjs/passport';
 import { SysUserService } from '~/ruoyi-system/sys-user/sys-user.service';
-// import { SysRoleService } from '~/ruoyi-system/sys-role/sys-role.service';
-// import { SysDeptService } from '~/ruoyi-system/sys-dept/sys-dept.service';
-// import { SysPostService } from '~/ruoyi-system/sys-post/sys-post.service';
-// import { Log } from '~/ruoyi-share/decorators/log.decorator';
-// import { BusinessType } from '~/ruoyi-share/enums/business-type.enum';
-// import { PreAuthorize } from '~/ruoyi-share/decorators/preauthorize.decorator';
-// import { DataScope } from '~/ruoyi-share/decorators/datascope.decorator';
+
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { SysDeptService } from '~/ruoyi-system/sys-dept/sys-dept.service';
@@ -53,7 +46,6 @@ import { SysDept } from '~/ruoyi-system/sys-dept/entities/sys-dept.entity';
 export class SysUserController extends BaseController {
   constructor(
     private readonly userService: SysUserService,
-    // private readonly sysRoleService: SysRoleService,
     private readonly deptService: SysDeptService,
     private readonly postService: SysPostService,
     private readonly roleService: SysRoleService,

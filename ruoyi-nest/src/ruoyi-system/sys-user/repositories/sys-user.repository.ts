@@ -158,50 +158,82 @@ export class SysUserRepository {
         return [SensitiveUtils.desensitizeUserList(rows), len];
     }
 
-    // /**
-    //  * 查询已分配用户角色列表
-    //  */
-    // async selectAllocatedList(roleId: number, query: QuerySysUserDto): Promise<[SysUser[], number]> {
-    //     const queryBuilder = this.createBaseQuery()
-    //         .where('u.delFlag = :delFlag', { delFlag: '0' })
-    //         .andWhere('r.roleId = :roleId', { roleId });
+    /**
+     * 查询已分配用户角色列表
+     */
+    async selectAllocatedList(query: SysUser): Promise<[SysUser[], number]> {
+        const queryBuilder = this.userRepository.createQueryBuilder('u')
+            .distinct(true)
+            .select([
+                'u.userId',
+                'u.deptId',
+                'u.userName',
+                'u.nickName',
+                'u.email',
+                'u.phonenumber',
+                'u.status',
+                'u.createTime'
+            ])
+            .leftJoinAndMapOne('u.dept', 'sys_dept', 'd', 'u.dept_id = d.dept_id')
+            .leftJoin('sys_user_role', 'ur', 'u.user_id = ur.user_id')
+            .leftJoinAndMapMany('u.roles', 'sys_role', 'r', 'r.role_id = ur.role_id')
+            .where('u.delFlag = :delFlag', { delFlag: '0' })
+            .andWhere('r.roleId = :roleId', { roleId: query.roleId });
 
-    //     if (query.userName) {
-    //         queryBuilder.andWhere('u.userName LIKE :userName', { userName: `%${query.userName}%` });
-    //     }
+        if (query.userName != null && query.userName != '') {
+            queryBuilder.andWhere('u.userName LIKE :userName', { userName: `%${query.userName}%` });
+        }
 
-    //     if (query.phonenumber) {
-    //         queryBuilder.andWhere('u.phonenumber LIKE :phonenumber', { phonenumber: `%${query.phonenumber}%` });
-    //     }
+        if (query.phonenumber != null && query.phonenumber != '') {
+            queryBuilder.andWhere('u.phonenumber LIKE :phonenumber', { phonenumber: `%${query.phonenumber}%` });
+        }
 
-    //     // TODO: Implement data scope filtering
-    //     // ${params.dataScope}
+        this.dataScopeUtils.dataScopeFilter(queryBuilder, query.params);
 
-    //     return queryBuilder.getManyAndCount();
-    // }
+        this.sqlLoggerUtils.log(queryBuilder, 'selectAllocatedList');
 
-    // /**
-    //  * 查��未分配用户角色列表
-    //  */
-    // async selectUnallocatedList(roleId: number, query: QuerySysUserDto): Promise<[SysUser[], number]> {
-    //     const queryBuilder = this.createBaseQuery()
-    //         .where('u.delFlag = :delFlag', { delFlag: '0' })
-    //         .andWhere('(r.roleId != :roleId OR r.roleId IS NULL)', { roleId })
-    //         .andWhere('u.userId NOT IN (SELECT userId FROM sys_user_role WHERE roleId = :roleId)', { roleId });
+        const [rows, len] = await this.queryUtils.executeQuery(queryBuilder, query);
+        return [rows, len];
+    }
 
-    //     if (query.userName) {
-    //         queryBuilder.andWhere('u.userName LIKE :userName', { userName: `%${query.userName}%` });
-    //     }
+    /**
+     * 查询未分配用户角色列表
+     */
+    async selectUnallocatedList(query: SysUser): Promise<[SysUser[], number]> {
+        const queryBuilder = this.userRepository.createQueryBuilder('u')
+            .distinct(true)
+            .select([
+                'u.userId',
+                'u.deptId',
+                'u.userName',
+                'u.nickName',
+                'u.email',
+                'u.phonenumber',
+                'u.status',
+                'u.createTime'
+            ])
+            .leftJoinAndMapOne('u.dept', 'sys_dept', 'd', 'u.dept_id = d.dept_id')
+            .leftJoin('sys_user_role', 'ur', 'u.user_id = ur.user_id')
+            .leftJoinAndMapMany('u.roles', 'sys_role', 'r', 'r.role_id = ur.role_id')
+            .where('u.delFlag = :delFlag', { delFlag: '0' })
+            .andWhere('r.roleId != :roleId OR r.roleId IS NULL', { roleId: query.roleId })
+            .andWhere('u.userId NOT IN (SELECT u.userId FROM sys_user u INNER JOIN sys_user_role ur ON u.userId = ur.userId AND ur.roleId = :roleId)', { roleId: query.roleId });
 
-    //     if (query.phonenumber) {
-    //         queryBuilder.andWhere('u.phonenumber LIKE :phonenumber', { phonenumber: `%${query.phonenumber}%` });
-    //     }
+        if (query.userName != null && query.userName != '') {
+            queryBuilder.andWhere('u.userName LIKE :userName', { userName: `%${query.userName}%` });
+        }
 
-    //     // TODO: Implement data scope filtering
-    //     // ${params.dataScope}
+        if (query.phonenumber != null && query.phonenumber != '') {
+            queryBuilder.andWhere('u.phonenumber LIKE :phonenumber', { phonenumber: `%${query.phonenumber}%` });
+        }
 
-    //     return queryBuilder.getManyAndCount();
-    // }
+        this.dataScopeUtils.dataScopeFilter(queryBuilder, query.params);
+
+        this.sqlLoggerUtils.log(queryBuilder, 'selectUnallocatedList');
+
+        const [rows, len] = await this.queryUtils.executeQuery(queryBuilder, query);
+        return [rows, len];
+    }
 
 
     // /**

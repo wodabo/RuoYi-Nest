@@ -3,18 +3,18 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
-import './assets/styles/element-variables.scss'
+import '@/assets/styles/element-variables.scss'
+import '@/assets/styles/index.scss'
+import '@/assets/styles/ruoyi.scss'
 
-import '@/assets/styles/index.scss' // global css
-import '@/assets/styles/ruoyi.scss' // ruoyi css
-import App from './App'
+import App from './App.vue'
 import store from './store'
 import router from './router'
 import directive from './directive' // directive
 import plugins from './plugins' // plugins
 import { download } from '@/utils/request'
 
-import './assets/icons' // icon
+import '@/utils/icons' // icon
 import './permission' // permission control
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
@@ -37,6 +37,9 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+import ThemeUtils from '@/utils/theme'
+
+ThemeUtils.initTheme()
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -63,6 +66,8 @@ Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
 
+
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -77,6 +82,8 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
+
+
 
 new Vue({
   el: '#app',

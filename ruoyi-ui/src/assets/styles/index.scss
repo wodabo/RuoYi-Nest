@@ -5,6 +5,27 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
+
+// 默认菜单主题风格
+:root {
+  --theme: #409EFF;
+  --menu-color: #bfcbd9;  
+  --menu-color-active: #409EFF;
+  --menu-background: #304156;
+  --sub-menu-background: #1f2d3d;
+  --sub-menu-hover: #001528;
+  --sidebar-width: 200px;     
+  --logo-title-color: #ffffff;
+}
+
+
+// 暗色主题
+html[theme-mode='light'] {
+  --menu-color: rgba(0,0,0,.70);
+  --menu-background: #ffffff; 
+  --logo-title-color: #001529;
+}
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;

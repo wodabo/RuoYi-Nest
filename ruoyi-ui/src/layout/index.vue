@@ -20,7 +20,6 @@ import RightPanel from '@/components/RightPanel'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
-import variables from '@/assets/styles/variables.scss'
 
 export default {
   name: 'Layout',
@@ -36,7 +35,7 @@ export default {
   computed: {
     ...mapState({
       theme: state => state.settings.theme,
-      sideTheme: state => state.settings.sideTheme,
+      themeMode: state => state.settings.themeMode,
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,
       needTagsView: state => state.settings.tagsView,
@@ -50,9 +49,7 @@ export default {
         mobile: this.device === 'mobile'
       }
     },
-    variables() {
-      return variables;
-    }
+
   },
   methods: {
     handleClickOutside() {
@@ -63,8 +60,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/assets/styles/mixin.scss";
-  @import "~@/assets/styles/variables.scss";
+  @import "@/assets/styles/mixin.scss";
 
   .app-wrapper {
     @include clearfix;
@@ -93,7 +89,7 @@ export default {
     top: 0;
     right: 0;
     z-index: 9;
-    width: calc(100% - #{$base-sidebar-width});
+    width: calc(100% - var(--sidebar-width));
     transition: width 0.28s;
   }
 

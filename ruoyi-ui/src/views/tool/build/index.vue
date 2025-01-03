@@ -135,7 +135,7 @@
   </div>
 </template>
 
-<script>
+<script lang="jsx">
 import draggable from 'vuedraggable'
 import beautifier from 'js-beautify'
 import ClipboardJS from 'clipboard'

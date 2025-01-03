@@ -18,7 +18,11 @@
 </template>
 
 <script>
-import icons from './requireIcons'
+// import icons from './requireIcons'
+const icons = document.querySelectorAll('#__svg__icons__dom__ symbol')
+const iconList = Array.from(icons).map(el => 
+  el.id.replace('icon-', '')
+)
 export default {
   name: 'IconSelect',
   props: {
@@ -29,14 +33,13 @@ export default {
   data() {
     return {
       name: '',
-      iconList: icons
+      iconList: iconList
     }
   },
   methods: {
     filterIcons() {
-      this.iconList = icons
       if (this.name) {
-        this.iconList = this.iconList.filter(item => item.includes(this.name))
+        this.iconList = iconList.filter(item => item.includes(this.name))
       }
     },
     selectedIcon(name) {
@@ -45,7 +48,6 @@ export default {
     },
     reset() {
       this.name = ''
-      this.iconList = icons
     }
   }
 }

@@ -546,7 +546,6 @@ export class GifUtils {
   
     for (let n = 0; n < size; n++) {
       l[n] %= 25
-      console.log(l[n],p,im,swr,s1,s2,'wwwwwwwwwwwwww')
       p = this.letter(l[n], p, im, swr, s1, s2)
       l[n] = LETTERS.charCodeAt(l[n])
     }

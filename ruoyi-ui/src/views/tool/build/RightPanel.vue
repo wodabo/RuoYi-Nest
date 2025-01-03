@@ -571,7 +571,7 @@
   </div>
 </template>
 
-<script>
+<script lang="jsx">
 import { isArray } from 'util'
 import draggable from 'vuedraggable'
 import TreeNodeDialog from './TreeNodeDialog'
@@ -917,7 +917,7 @@ export default {
   .el-date-editor {
     width: 227px;
   }
-  ::v-deep .el-icon-time {
+  :deep(.el-icon-time) {  
     display: none;
   }
 }

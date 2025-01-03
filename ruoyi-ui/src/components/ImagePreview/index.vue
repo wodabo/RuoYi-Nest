@@ -39,7 +39,7 @@ export default {
       if (isExternal(real_src)) {
         return real_src;
       }
-      return process.env.VUE_APP_BASE_API + real_src;
+      return import.meta.env.VITE_APP_BASE_API + real_src;
     },
     realSrcList() {
       if (!this.src) {
@@ -51,7 +51,7 @@ export default {
         if (isExternal(item)) {
           return srcList.push(item);
         }
-        return srcList.push(process.env.VUE_APP_BASE_API + item);
+        return srcList.push(import.meta.env.VITE_APP_BASE_API + item);
       });
       return srcList;
     },
@@ -70,14 +70,14 @@ export default {
   border-radius: 5px;
   background-color: #ebeef5;
   box-shadow: 0 0 5px 1px #ccc;
-  ::v-deep .el-image__inner {
+  :deep(.el-image__inner) { 
     transition: all 0.3s;
     cursor: pointer;
     &:hover {
       transform: scale(1.2);
     }
   }
-  ::v-deep .image-slot {
+  :deep(.image-slot) {
     display: flex;
     justify-content: center;
     align-items: center;

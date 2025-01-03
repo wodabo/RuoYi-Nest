@@ -1,11 +1,12 @@
 datasource:
   type: mysql
-  host: 127.0.0.1
-  port: 3306
+  host: 192.168.1.122
+  port: 3307
   username: root
-  password: password
-  database: ry-vue
+  password: root
+  database: ry_vue
   autoLoadEntities: true
+  multipleStatements: true
   synchronize: false
   charset: utf8mb4
   timezone: '+08:00'

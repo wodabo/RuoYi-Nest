@@ -1,5 +1,19 @@
 import { parseTime } from './ruoyi'
 
+
+// 预加载所有视图组件
+const modules = import.meta.glob('@/views/**/*.vue')
+
+export const loadView = (view) => {
+  if (import.meta.env.MODE === 'development') {
+    return () => import(`../views/${view}.vue`)
+  } else {
+    // 使用 import 实现生产环境的路由懒加载
+    return modules[`../views/${view}.vue`]
+  }
+}
+
+
 /**
  * 表格时间格式化
  */
@@ -387,4 +401,15 @@ export function camelCase(str) {
 export function isNumberStr(str) {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }
+
+
+/**
+ * Get the URL of the resource file in the src/assets directory
+ * @param {string} fileName - The name of the resource file
+ * @returns {string} - The URL of the resource file
+ */
+export function getImageUrl(path) {
+  return new URL(`../assets/${path}`, import.meta.url).href;
+}
+
 

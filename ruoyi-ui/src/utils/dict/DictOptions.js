@@ -19,14 +19,7 @@ export const options = {
       valueField: 'value',
     },
   },
-  /**
-   * 默认标签字段
-   */
-  DEFAULT_LABEL_FIELDS: ['label', 'name', 'title'],
-  /**
-   * 默认值字段
-   */
-  DEFAULT_VALUE_FIELDS: ['value', 'id', 'uid', 'key'],
+
 }
 
 /**

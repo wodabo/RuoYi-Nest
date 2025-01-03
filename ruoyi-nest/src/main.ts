@@ -79,7 +79,6 @@ class RuoYiServletInitializer {
         .swagger-ui .scheme-container { display: none }
       `,
       // 自定义JS
-      customJs: '/custom.js',
       // 设置serve静态文件
       useGlobalPrefix: true,
       explorer: true,

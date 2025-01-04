@@ -17,14 +17,16 @@ export class SysDictTypeService {
     private readonly dictDataRepository: SysDictDataRepository,
     @InjectDataSource() private dataSource: DataSource,
     private readonly stringUtils: StringUtils,
-    private readonly dictUtils: DictUtils
-  ) { }
+    private readonly dictUtils: DictUtils,
+  ) {}
 
   async init() {
     await this.loadingDictCache();
   }
 
-  async selectDictTypeList(dictType: SysDictType): Promise<[SysDictType[], number]> {
+  async selectDictTypeList(
+    dictType: SysDictType,
+  ): Promise<[SysDictType[], number]> {
     return this.dictTypeRepository.selectDictTypeList(dictType);
   }
 
@@ -56,7 +58,10 @@ export class SysDictTypeService {
   async deleteDictTypeByIds(dictIds: number[]): Promise<void> {
     for (const dictId of dictIds) {
       const dictType = await this.selectDictTypeById(dictId);
-      if (await this.dictDataRepository.countDictDataByType(dictType.dictType) > 0) {
+      if (
+        (await this.dictDataRepository.countDictDataByType(dictType.dictType)) >
+        0
+      ) {
         throw new ServiceException(`${dictType.dictName}已分配,不能删除`);
       }
       await this.dictTypeRepository.deleteDictTypeById(dictId);
@@ -67,7 +72,8 @@ export class SysDictTypeService {
   async loadingDictCache(): Promise<void> {
     const dictData = new SysDictData();
     dictData.status = '0';
-    const [dictDataList, total] = await this.dictDataRepository.selectDictDataList(dictData);
+    const [dictDataList, total] =
+      await this.dictDataRepository.selectDictDataList(dictData);
     const dictDataMap = dictDataList.reduce((map, item) => {
       if (!map[item.dictType]) {
         map[item.dictType] = [];
@@ -76,7 +82,10 @@ export class SysDictTypeService {
       return map;
     }, {});
     for (const [key, value] of Object.entries(dictDataMap)) {
-      this.dictUtils.setDictCache(key, (value as SysDictData[]).sort((a, b) => a.dictSort - b.dictSort));
+      this.dictUtils.setDictCache(
+        key,
+        (value as SysDictData[]).sort((a, b) => a.dictSort - b.dictSort),
+      );
     }
   }
 
@@ -102,12 +111,19 @@ export class SysDictTypeService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const oldDict = await this.dictTypeRepository.selectDictTypeById(dict.dictId);
-      await this.dictDataRepository.updateDictDataType(oldDict.dictType, dict.dictType);
+      const oldDict = await this.dictTypeRepository.selectDictTypeById(
+        dict.dictId,
+      );
+      await this.dictDataRepository.updateDictDataType(
+        oldDict.dictType,
+        dict.dictType,
+      );
       const row = await this.dictTypeRepository.updateDictType(dict);
 
       if (row > 0) {
-        const dictDatas = await this.dictDataRepository.selectDictDataByType(dict.dictType);
+        const dictDatas = await this.dictDataRepository.selectDictDataByType(
+          dict.dictType,
+        );
         this.dictUtils.setDictCache(dict.dictType, dictDatas);
       }
 
@@ -119,12 +135,13 @@ export class SysDictTypeService {
     } finally {
       await queryRunner.release();
     }
-
   }
 
   async checkDictTypeUnique(dict: SysDictType): Promise<boolean> {
     const dictId = this.stringUtils.isNull(dict.dictId) ? -1 : dict.dictId;
-    const dictType = await this.dictTypeRepository.checkDictTypeUnique(dict.dictType);
+    const dictType = await this.dictTypeRepository.checkDictTypeUnique(
+      dict.dictType,
+    );
     if (this.stringUtils.isNotNull(dictType) && dictType.dictId !== dictId) {
       return UserConstants.NOT_UNIQUE;
     }

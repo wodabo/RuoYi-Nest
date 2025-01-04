@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-@Module({   
-    imports: [
-    ],
-    providers: [],
-    exports: []
+@Module({
+  imports: [],
+  providers: [],
+  exports: [],
 })
-export class RuoYiShareModule { }
+export class RuoYiShareModule {}

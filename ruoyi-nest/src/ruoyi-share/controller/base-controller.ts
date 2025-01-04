@@ -37,34 +37,33 @@ export class BaseController {
     return new TableDataInfo(list, total);
   }
 
-
   /**
    * 返回失败消息
    */
-  protected error(msg?:string): AjaxResult {
+  protected error(msg?: string): AjaxResult {
     return AjaxResult.error(msg);
   }
 
-//   /**
-//    * 返回成功消息
-//    */
-//   protected successWithMessage(message: string): AjaxResult {
-//     return AjaxResult.success(message);
-//   }
+  //   /**
+  //    * 返回成功消息
+  //    */
+  //   protected successWithMessage(message: string): AjaxResult {
+  //     return AjaxResult.success(message);
+  //   }
 
   /**
    * 返回成功数据
    */
-  protected success(data?: any,msg?:string): AjaxResult {
-    return AjaxResult.success(data,msg);
+  protected success(data?: any, msg?: string): AjaxResult {
+    return AjaxResult.success(data, msg);
   }
 
-//   /**
-//    * 返回失败消息
-//    */
-//   protected errorWithMessage(message: string): AjaxResult {
-//     return AjaxResult.error(message);
-//   }
+  //   /**
+  //    * 返回失败消息
+  //    */
+  //   protected errorWithMessage(message: string): AjaxResult {
+  //     return AjaxResult.error(message);
+  //   }
 
   /**
    * 返回警告消息
@@ -80,38 +79,38 @@ export class BaseController {
     return result ? this.success() : this.error();
   }
 
-//   /**
-//    * 页面跳转
-//    */
-//   protected redirect(url: string): string {
-//     return StringUtils.format('redirect:{}', url);
-//   }
+  //   /**
+  //    * 页面跳转
+  //    */
+  //   protected redirect(url: string): string {
+  //     return StringUtils.format('redirect:{}', url);
+  //   }
 
-//   /**
-//    * 获取用户缓存信息
-//    */
-//   protected getLoginUser(req: Request): LoginUser {
-//     return SecurityUtils.getLoginUser(req);
-//   }
+  //   /**
+  //    * 获取用户缓存信息
+  //    */
+  //   protected getLoginUser(req: Request): LoginUser {
+  //     return SecurityUtils.getLoginUser(req);
+  //   }
 
-//   /**
-//    * 获取登录用户id
-//    */
-//   protected getUserId(req: Request): number {
-//     return this.getLoginUser(req).userId;
-//   }
+  //   /**
+  //    * 获取登录用户id
+  //    */
+  //   protected getUserId(req: Request): number {
+  //     return this.getLoginUser(req).userId;
+  //   }
 
-//   /**
-//    * 获取登录部门id
-//    */
-//   protected getDeptId(req: Request): number {
-//     return this.getLoginUser(req).deptId;
-//   }
+  //   /**
+  //    * 获取登录部门id
+  //    */
+  //   protected getDeptId(req: Request): number {
+  //     return this.getLoginUser(req).deptId;
+  //   }
 
-//   /**
-//    * 获取登录用户名
-//    */
-//   protected getUsername(req: Request): string {
-//     return this.getLoginUser(req).username;
-//   }
+  //   /**
+  //    * 获取登录用户名
+  //    */
+  //   protected getUsername(req: Request): string {
+  //     return this.getLoginUser(req).username;
+  //   }
 }

@@ -1,12 +1,12 @@
-import { CallHandler, Injectable, NestInterceptor } from "@nestjs/common";
-import { ExecutionContext } from "@nestjs/common";
-import {ContextHolderUtils} from '~/ruoyi-share/utils/context-holder.utils'
+import { CallHandler, Injectable, NestInterceptor } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
+import { ContextHolderUtils } from '~/ruoyi-share/utils/context-holder.utils';
 import { tap } from 'rxjs/operators';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RequestContextInterceptor implements NestInterceptor {
-  constructor(private readonly contextHolderUtils:ContextHolderUtils) {}  
+  constructor(private readonly contextHolderUtils: ContextHolderUtils) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
@@ -16,9 +16,9 @@ export class RequestContextInterceptor implements NestInterceptor {
         tap({
           finalize: () => {
             this.contextHolderUtils.setContext('request', null);
-          }
-        })
+          },
+        }),
       );
     });
   }
-}   
+}

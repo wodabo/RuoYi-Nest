@@ -3,11 +3,11 @@ import { UserException } from './UserException';
 
 /**
  * 验证码错误异常类
- * 
+ *
  * @author ruoyi
  */
 export class CaptchaException extends UserException {
-    constructor() {
-        super(MessageUtils.message('user.jcaptcha.error'), null);
-    }
+  constructor() {
+    super(MessageUtils.message('user.jcaptcha.error'), null);
+  }
 }

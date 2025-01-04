@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res,Request, ParseArrayPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Res,
+  Request,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SysRoleService } from '~/ruoyi-system/sys-role/sys-role.service';
 import { SysRole } from '~/ruoyi-system/sys-role/entities/sys-role.entity';
@@ -28,7 +40,7 @@ export class SysRoleController extends BaseController {
     private readonly securityUtils: SecurityUtils,
     private readonly userService: SysUserService,
     private readonly permissionService: SysPermissionService,
-    private readonly jwtAuthService: JwtAuthService 
+    private readonly jwtAuthService: JwtAuthService,
   ) {
     super();
   }
@@ -37,26 +49,26 @@ export class SysRoleController extends BaseController {
   @Get('list')
   @ApiOperation({ summary: '获取角色列表' })
   @ApiResponse({ status: 200, description: '成功', type: TableDataInfo })
-  async list(@Query() query: SysRole,@Request() req): Promise<TableDataInfo> {
+  async list(@Query() query: SysRole, @Request() req): Promise<TableDataInfo> {
     this.startPage(query);
-    const loginUser = req.user
+    const loginUser = req.user;
     const [list, total] = await this.roleService.selectRoleList(query);
     return this.getDataTable(list, total);
   }
 
-  @PreAuthorize('hasPermi("system:role:export")')   
+  @PreAuthorize('hasPermi("system:role:export")')
   @Post('export')
-  @Log({ title: '角色管理', businessType: BusinessType.EXPORT })  
+  @Log({ title: '角色管理', businessType: BusinessType.EXPORT })
   @ApiOperation({ summary: '导出角色数据' })
   async export(@Res() res, @Body() role: SysRole): Promise<void> {
     const [list, _total] = await this.roleService.selectRoleList(role);
-    await this.excelUtils.exportExcel(res, list, '角色数据',SysRole);
+    await this.excelUtils.exportExcel(res, list, '角色数据', SysRole);
   }
 
-  @PreAuthorize('hasPermi("system:role:query")')  
+  @PreAuthorize('hasPermi("system:role:query")')
   @Get(':roleId')
   @ApiOperation({ summary: '根据角色编号获取详细信息' })
-  @ApiResponse({ status: 200, description: '成功', type: AjaxResult })    
+  @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
   async getInfo(@Param('roleId') roleId: number): Promise<AjaxResult> {
     await this.roleService.checkRoleDataScope([roleId]);
     const data = await this.roleService.selectRoleById(roleId);
@@ -68,8 +80,8 @@ export class SysRoleController extends BaseController {
   @Log({ title: '角色管理', businessType: BusinessType.INSERT })
   @ApiOperation({ summary: '新增角色' })
   @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
-  async add(@Body() role: SysRole,@Request() req): Promise<AjaxResult> {
-    const loginUser = req.user
+  async add(@Body() role: SysRole, @Request() req): Promise<AjaxResult> {
+    const loginUser = req.user;
     if (!(await this.roleService.checkRoleNameUnique(role))) {
       return AjaxResult.error(`新增角色'${role.roleName}'失败，角色名称已存在`);
     }
@@ -86,8 +98,8 @@ export class SysRoleController extends BaseController {
   @Log({ title: '角色管理', businessType: BusinessType.UPDATE })
   @ApiOperation({ summary: '修改保存角色' })
   @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
-  async edit(@Body() role: SysRole,@Request() req): Promise<AjaxResult> {
-    const loginUser = req.user
+  async edit(@Body() role: SysRole, @Request() req): Promise<AjaxResult> {
+    const loginUser = req.user;
     this.roleService.checkRoleAllowed(role);
     await this.roleService.checkRoleDataScope([role.roleId]);
     if (!(await this.roleService.checkRoleNameUnique(role))) {
@@ -99,10 +111,14 @@ export class SysRoleController extends BaseController {
     role.updateBy = loginUser.getUsername();
     const result = await this.roleService.updateRole(role);
     if (result > 0) {
-      // Update cache user permissions  
+      // Update cache user permissions
       if (loginUser && !this.securityUtils.isAdmin(loginUser.userId)) {
-        loginUser.user = await this.userService.selectUserByUserName(loginUser.getUsername());
-        loginUser.permissions = await this.permissionService.getMenuPermission(loginUser.user);
+        loginUser.user = await this.userService.selectUserByUserName(
+          loginUser.getUsername(),
+        );
+        loginUser.permissions = await this.permissionService.getMenuPermission(
+          loginUser.user,
+        );
         this.jwtAuthService.setLoginUser(loginUser);
       }
       return AjaxResult.success();
@@ -137,11 +153,14 @@ export class SysRoleController extends BaseController {
   @Log({ title: '角色管理', businessType: BusinessType.DELETE })
   @ApiOperation({ summary: '删除角色' })
   @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
-  async remove(@Param('roleIds',new ParseArrayPipe({ items: Number, separator: ',' })) roleIds: number[]): Promise<AjaxResult> {
+  async remove(
+    @Param('roleIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    roleIds: number[],
+  ): Promise<AjaxResult> {
     return AjaxResult.success(await this.roleService.deleteRoleByIds(roleIds));
   }
 
-  @PreAuthorize('hasPermi("system:role:query")')  
+  @PreAuthorize('hasPermi("system:role:query")')
   @Get('optionselect')
   @ApiOperation({ summary: '获取角色选择框列表' })
   @ApiResponse({ status: 200, description: '成功', type: AjaxResult })
@@ -150,65 +169,70 @@ export class SysRoleController extends BaseController {
     return AjaxResult.success(roles);
   }
 
+  /**
+   * 查询已分配用户角色列表
+   */
+  @PreAuthorize('hasPermi("system:role:list")')
+  @Get('authUser/allocatedList')
+  public async allocatedList(@Query() user: SysUser): Promise<TableDataInfo> {
+    this.startPage(user);
+    const [list, total] = await this.userService.selectAllocatedList(user);
+    return this.getDataTable(list, total);
+  }
 
-    /**
-     * 查询已分配用户角色列表
-     */
-    @PreAuthorize('hasPermi("system:role:list")') 
-    @Get('authUser/allocatedList')
-    public async allocatedList(@Query() user:SysUser):Promise<TableDataInfo>
-    {
-        this.startPage(user);
-        const [list, total] = await this.userService.selectAllocatedList(user);
-        return this.getDataTable(list, total);
-    }
+  /**
+   * 查询未分配用户角色列表
+   */
+  @PreAuthorize('hasPermi("system:role:list")')
+  @Get('authUser/unallocatedList')
+  public async unallocatedList(@Query() user: SysUser): Promise<TableDataInfo> {
+    this.startPage(user);
+    const [list, total] = await this.userService.selectUnallocatedList(user);
+    return this.getDataTable(list, total);
+  }
 
-    /**
-     * 查询未分配用户角色列表
-     */
-    @PreAuthorize('hasPermi("system:role:list")')
-    @Get('authUser/unallocatedList')
-    public async unallocatedList(@Query() user:SysUser):Promise<TableDataInfo>
-    {
-        this.startPage(user);
-        const [list, total] = await this.userService.selectUnallocatedList(user);
-        return this.getDataTable(list, total);
-    }
+  /**
+   * 取消授权用户
+   */
+  @PreAuthorize('hasPermi("system:role:edit")')
+  @Log({ title: '角色管理', businessType: BusinessType.GRANT })
+  @Put('authUser/cancel')
+  public async cancelAuthUser(
+    @Body() userRole: SysUserRole,
+  ): Promise<AjaxResult> {
+    return AjaxResult.success(await this.roleService.deleteAuthUser(userRole));
+  }
 
-    /**
-     * 取消授权用户
-     */
-    @PreAuthorize('hasPermi("system:role:edit")')
-    @Log({ title: '角色管理', businessType: BusinessType.GRANT })
-    @Put('authUser/cancel')
-    public async cancelAuthUser(@Body() userRole:SysUserRole):Promise<AjaxResult>
-    {
-        return AjaxResult.success(await this.roleService.deleteAuthUser(userRole));
-    }
+  /**
+   * 批量取消授权用户
+   */
+  @PreAuthorize('hasPermi("system:role:edit")')
+  @Log({ title: '角色管理', businessType: BusinessType.GRANT })
+  @Put('authUser/cancelAll')
+  public async cancelAuthUserAll(
+    @Body() roleId: number,
+    @Body() userIds: number[],
+  ): Promise<AjaxResult> {
+    return AjaxResult.success(
+      await this.roleService.deleteAuthUsers(roleId, userIds),
+    );
+  }
 
-    /**
-     * 批量取消授权用户
-     */
-    @PreAuthorize('hasPermi("system:role:edit")')
-    @Log({ title: '角色管理', businessType: BusinessType.GRANT })
-    @Put('authUser/cancelAll')
-    public async cancelAuthUserAll(@Body() roleId:number, @Body() userIds:number[]):Promise<AjaxResult>
-    {
-        return AjaxResult.success(await this.roleService.deleteAuthUsers(roleId, userIds));
-    }
-
-    /**
-     * 批量选择用户授权
-     */
-    @PreAuthorize('hasPermi("system:role:edit")')
-    @Log({ title: '角色管理', businessType: BusinessType.GRANT })
-    @Put('authUser/selectAll')
-    public async selectAuthUserAll(@Body() roleId:number, @Body() userIds:number[]):Promise<AjaxResult>
-    {
-        this.roleService.checkRoleDataScope([roleId]);
-        return AjaxResult.success(await this.roleService.insertAuthUsers(roleId, userIds));
-    }
-
+  /**
+   * 批量选择用户授权
+   */
+  @PreAuthorize('hasPermi("system:role:edit")')
+  @Log({ title: '角色管理', businessType: BusinessType.GRANT })
+  @Put('authUser/selectAll')
+  public async selectAuthUserAll(
+    @Body() roleId: number,
+    @Body() userIds: number[],
+  ): Promise<AjaxResult> {
+    this.roleService.checkRoleDataScope([roleId]);
+    return AjaxResult.success(
+      await this.roleService.insertAuthUsers(roleId, userIds),
+    );
+  }
 
   @PreAuthorize('hasPermi("system:role:query")')
   @Get('deptTree/:roleId')
@@ -222,5 +246,4 @@ export class SysRoleController extends BaseController {
     ajax.depts = depts;
     return ajax;
   }
-
 }

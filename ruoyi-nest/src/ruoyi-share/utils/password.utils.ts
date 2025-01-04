@@ -14,29 +14,28 @@ import { SecurityUtils } from './security.utils';
 
 /**
  * 安全服务工具类
- * 
+ *
  * @author ruoyi
  */
 @Injectable()
 export class PasswordUtils {
-  private maxRetryCount: number
-  private lockTime: number
+  private maxRetryCount: number;
+  private lockTime: number;
 
   constructor(
     private readonly redisCacheService: RedisCacheService,
     private readonly configService: ConfigService,
-    private readonly securityUtils: SecurityUtils,  
-   
-) {
-    this.maxRetryCount = this.configService.get<number>('user.password.maxRetryCount');
+    private readonly securityUtils: SecurityUtils,
+  ) {
+    this.maxRetryCount = this.configService.get<number>(
+      'user.password.maxRetryCount',
+    );
     this.lockTime = this.configService.get<number>('user.password.lockTime');
-}    
-
-
+  }
 
   /**
    * 登录账户密码错误次数缓存键名
-   * 
+   *
    * @param username 用户名
    * @return 缓存键key
    */
@@ -46,7 +45,7 @@ export class PasswordUtils {
 
   /**
    * 验证用户登录
-   * 
+   *
    * @param user 用户对象
    */
   async validate(user: SysUser): Promise<void> {
@@ -56,19 +55,28 @@ export class PasswordUtils {
 
     const password = loginUser.getPassword();
 
-    let retryCount: number = await this.redisCacheService.getCacheObject(this.getCacheKey(username));
+    let retryCount: number = await this.redisCacheService.getCacheObject(
+      this.getCacheKey(username),
+    );
 
     if (!retryCount) {
       retryCount = 0;
     }
 
     if (retryCount >= this.maxRetryCount) {
-      throw new ServiceException(`密码错误次数超过限制(${this.maxRetryCount}), 请在${this.lockTime}分钟后重试`, HttpStatus.UNAUTHORIZED);
+      throw new ServiceException(
+        `密码错误次数超过限制(${this.maxRetryCount}), 请在${this.lockTime}分钟后重试`,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     if (!this.securityUtils.matchesPassword(password, user.password)) {
       retryCount++;
-      this.redisCacheService.setCacheObjectWithTimeout(this.getCacheKey(username), retryCount, this.lockTime);
+      this.redisCacheService.setCacheObjectWithTimeout(
+        this.getCacheKey(username),
+        retryCount,
+        this.lockTime,
+      );
       throw new ServiceException('密码不匹配', HttpStatus.UNAUTHORIZED);
     } else {
       this.clearLoginRecordCache(username);
@@ -77,7 +85,7 @@ export class PasswordUtils {
 
   /**
    * 清除登录记录缓存
-   * 
+   *
    * @param loginName 登录名
    */
   clearLoginRecordCache(loginName: string): void {

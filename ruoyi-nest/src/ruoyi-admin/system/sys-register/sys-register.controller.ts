@@ -1,5 +1,16 @@
-import { Controller, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  PartialType,
+} from '@nestjs/swagger';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { AjaxResult } from '~/ruoyi-share/response/ajax-result';
 import { RegisterBodyDto } from '~/ruoyi-share/dto/register-body.dto';
@@ -19,8 +30,13 @@ export class SysRegisterController extends BaseController {
   @ApiOperation({ summary: '用户注册' })
   @Post()
   async register(@Body() user: RegisterBodyDto) {
-    if (!("true" === await this.configService.selectConfigByKey("sys.account.registerUser"))) {
-      return this.error("当前系统没有开启注册功能！");
+    if (
+      !(
+        'true' ===
+        (await this.configService.selectConfigByKey('sys.account.registerUser'))
+      )
+    ) {
+      return this.error('当前系统没有开启注册功能！');
     }
     const msg = await this.registerService.register(user);
     return !msg ? this.success() : this.error(msg);

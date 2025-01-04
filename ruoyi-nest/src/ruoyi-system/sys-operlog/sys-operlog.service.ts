@@ -4,15 +4,15 @@ import { SysOperlog } from './entities/sys-operlog.entity';
 
 @Injectable()
 export class SysOperlogService {
-  constructor(
-    private readonly operLogRepository: SysOperlogRepository,
-  ) {}
+  constructor(private readonly operLogRepository: SysOperlogRepository) {}
 
   async insertOperlog(operLog: SysOperlog): Promise<void> {
     await this.operLogRepository.insertOperlog(operLog);
   }
 
-  async selectOperLogList(operLog: SysOperlog): Promise<[SysOperlog[], number]> {
+  async selectOperLogList(
+    operLog: SysOperlog,
+  ): Promise<[SysOperlog[], number]> {
     return this.operLogRepository.selectOperLogList(operLog);
   }
 

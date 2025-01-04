@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import { InjectRedis } from '@songkeys/nestjs-redis'
+import { InjectRedis } from '@songkeys/nestjs-redis';
 
 @Injectable()
 export class RedisCacheService {
-
-  constructor(@InjectRedis() private redisService: Redis) {
-  }
+  constructor(@InjectRedis() private redisService: Redis) {}
 
   /**
    * 缓存基本的对象，Integer、String、实体类等
@@ -25,7 +23,11 @@ export class RedisCacheService {
    * @param value 缓存的值
    * @param timeout 时间
    */
-  public async setCacheObjectWithTimeout<T>(key: string, value: T, timeout: number): Promise<void> {
+  public async setCacheObjectWithTimeout<T>(
+    key: string,
+    value: T,
+    timeout: number,
+  ): Promise<void> {
     await this.redisService.set(key, JSON.stringify(value), 'EX', timeout);
   }
 
@@ -90,7 +92,7 @@ export class RedisCacheService {
    * @return
    */
   public async deleteObjects(keys: string[]): Promise<number> {
-    if(keys.length > 0){
+    if (keys.length > 0) {
       return await this.redisService.del(...keys);
     }
   }
@@ -103,7 +105,10 @@ export class RedisCacheService {
    * @return 缓存的对象
    */
   public async setCacheList<T>(key: string, dataList: T[]): Promise<number> {
-    const result = await this.redisService.rpush(key, ...dataList.map(item => JSON.stringify(item)));
+    const result = await this.redisService.rpush(
+      key,
+      ...dataList.map((item) => JSON.stringify(item)),
+    );
     return result;
   }
 
@@ -115,7 +120,7 @@ export class RedisCacheService {
    */
   public async getCacheList<T>(key: string): Promise<T[]> {
     const data = await this.redisService.lrange(key, 0, -1);
-    return data.map(item => JSON.parse(item));
+    return data.map((item) => JSON.parse(item));
   }
 
   /**
@@ -126,7 +131,10 @@ export class RedisCacheService {
    * @return 缓存数据的对象
    */
   public async setCacheSet<T>(key: string, dataSet: T[]): Promise<number> {
-    const result = await this.redisService.sadd(key, ...dataSet.map(item => JSON.stringify(item)));
+    const result = await this.redisService.sadd(
+      key,
+      ...dataSet.map((item) => JSON.stringify(item)),
+    );
     return result;
   }
 
@@ -138,7 +146,7 @@ export class RedisCacheService {
    */
   public async getCacheSet<T>(key: string): Promise<T[]> {
     const data = await this.redisService.smembers(key);
-    return data.map(item => JSON.parse(item));
+    return data.map((item) => JSON.parse(item));
   }
 
   /**
@@ -147,7 +155,10 @@ export class RedisCacheService {
    * @param key
    * @param dataMap
    */
-  public async setCacheMap<T>(key: string, dataMap: Record<string, T>): Promise<void> {
+  public async setCacheMap<T>(
+    key: string,
+    dataMap: Record<string, T>,
+  ): Promise<void> {
     const entries = Object.entries(dataMap).reduce((acc, [mapKey, value]) => {
       acc.push(mapKey, JSON.stringify(value));
       return acc;
@@ -176,7 +187,11 @@ export class RedisCacheService {
    * @param hKey Hash键
    * @param value 值
    */
-  public async setCacheMapValue<T>(key: string, hKey: string, value: T): Promise<void> {
+  public async setCacheMapValue<T>(
+    key: string,
+    hKey: string,
+    value: T,
+  ): Promise<void> {
     await this.redisService.hset(key, hKey, JSON.stringify(value));
   }
 
@@ -199,9 +214,12 @@ export class RedisCacheService {
    * @param hKeys Hash键集合
    * @return Hash对象集合
    */
-  public async getMultiCacheMapValue<T>(key: string, hKeys: string[]): Promise<T[]> {
+  public async getMultiCacheMapValue<T>(
+    key: string,
+    hKeys: string[],
+  ): Promise<T[]> {
     const data = await this.redisService.hmget(key, ...hKeys);
-    return data.map(item => JSON.parse(item));
+    return data.map((item) => JSON.parse(item));
   }
 
   /**
@@ -211,7 +229,10 @@ export class RedisCacheService {
    * @param hKey Hash键
    * @return 是否成功
    */
-  public async deleteCacheMapValue(key: string, hKey: string): Promise<boolean> {
+  public async deleteCacheMapValue(
+    key: string,
+    hKey: string,
+  ): Promise<boolean> {
     const result = await this.redisService.hdel(key, hKey);
     return result === 1;
   }

@@ -3,12 +3,13 @@ import * as path from 'path';
 import { parse } from 'properties-parser';
 
 // 加载 properties 文件
-const filePath = path.join(__dirname, '../../ruoyi-admin/resources/i18n/messages.properties');
+const filePath = path.join(
+  __dirname,
+  '../../ruoyi-admin/resources/i18n/messages.properties',
+);
 const content = fs.readFileSync(filePath, 'utf-8');
 
 export class MessageUtils {
-
-  
   private static messages: Record<string, string> = parse(content);
 
   /**
@@ -19,8 +20,6 @@ export class MessageUtils {
    * @returns 获取国际化翻译值
    */
   static message(code: string, args?: Record<string, any>): string {
-   
-        
     let message = MessageUtils.messages[code] || code;
 
     if (args) {
@@ -28,7 +27,7 @@ export class MessageUtils {
         message = message.replace(new RegExp(`{${key}}`, 'g'), value);
       });
     }
-    
+
     return message;
   }
 }

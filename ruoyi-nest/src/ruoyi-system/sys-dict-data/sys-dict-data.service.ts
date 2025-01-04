@@ -7,22 +7,24 @@ import { DictUtils } from '~/ruoyi-share/utils/dict.utils';
 export class SysDictDataService {
   constructor(
     private readonly dictDataRepository: SysDictDataRepository,
-    private readonly dictUtils: DictUtils 
-    ) {}
+    private readonly dictUtils: DictUtils,
+  ) {}
 
   /**
    * 根据条件分页查询字典数据
-   * 
+   *
    * @param dictData 字典数据信息
    * @return 字典数据集合信息
    */
-  async selectDictDataList(dictData: SysDictData): Promise<[SysDictData[], number]> {
+  async selectDictDataList(
+    dictData: SysDictData,
+  ): Promise<[SysDictData[], number]> {
     return this.dictDataRepository.selectDictDataList(dictData);
   }
 
   /**
    * 根据字典类型和字典键值查询字典数据信息
-   * 
+   *
    * @param dictType 字典类型
    * @param dictValue 字典键值
    * @return 字典标签
@@ -33,7 +35,7 @@ export class SysDictDataService {
 
   /**
    * 根据字典数据ID查询信息
-   * 
+   *
    * @param dictCode 字典数据ID
    * @return 字典数据
    */
@@ -43,14 +45,16 @@ export class SysDictDataService {
 
   /**
    * 批量删除字典数据信息
-   * 
+   *
    * @param dictCodes 需要删除的字典数据ID
    */
   async deleteDictDataByIds(dictCodes: number[]): Promise<void> {
     for (const dictCode of dictCodes) {
       const data = await this.selectDictDataById(dictCode);
       await this.dictDataRepository.deleteDictDataById(dictCode);
-      const dictDatas = await this.dictDataRepository.selectDictDataByType(data.dictType);
+      const dictDatas = await this.dictDataRepository.selectDictDataByType(
+        data.dictType,
+      );
       // Assuming DictUtils.setDictCache is a utility function to update cache
       // DictUtils.setDictCache(data.dictType, dictDatas);
     }
@@ -58,27 +62,31 @@ export class SysDictDataService {
 
   /**
    * 新增保存字典数据信息
-   * 
+   *
    * @param data 字典数据信息
    * @return 结果
    */
   async insertDictData(data: SysDictData): Promise<void> {
     await this.dictDataRepository.insertDictData(data);
-    const dictDatas = await this.dictDataRepository.selectDictDataByType(data.dictType);
+    const dictDatas = await this.dictDataRepository.selectDictDataByType(
+      data.dictType,
+    );
     // Assuming DictUtils.setDictCache is a utility function to update cache
     // DictUtils.setDictCache(data.dictType, dictDatas);
   }
 
   /**
    * 修改保存字典数据信息
-   * 
+   *
    * @param data 字典数据信息
    * @return 结果
    */
   async updateDictData(data: SysDictData): Promise<number> {
     const row = await this.dictDataRepository.updateDictData(data);
     if (row > 0) {
-      const dictDatas = await this.dictDataRepository.selectDictDataByType(data.dictType);
+      const dictDatas = await this.dictDataRepository.selectDictDataByType(
+        data.dictType,
+      );
       this.dictUtils.setDictCache(data.dictType, dictDatas);
     }
     return row;

@@ -8,12 +8,9 @@ import { SysDictDataModule } from '~/ruoyi-system/sys-dict-data/sys-dict-data.mo
 const providers = [SysDictTypeService, SysDictTypeRepository];
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SysDictType]),
-    SysDictDataModule
-  ],
+  imports: [TypeOrmModule.forFeature([SysDictType]), SysDictDataModule],
   controllers: [],
   providers,
-  exports: [SysDictTypeService]
+  exports: [SysDictTypeService],
 })
 export class SysDictTypeModule {}

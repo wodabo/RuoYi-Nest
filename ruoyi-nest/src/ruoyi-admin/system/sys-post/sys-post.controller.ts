@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseGuards, Res, DefaultValuePipe, ParseIntPipe, ParseArrayPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  Res,
+  DefaultValuePipe,
+  ParseIntPipe,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SysPostService } from '~/ruoyi-system/sys-post/sys-post.service';
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
@@ -12,10 +26,10 @@ import { BusinessType } from '~/ruoyi-share/enums/BusinessType';
 
 @ApiTags('岗位管理')
 @Controller('system/post')
-export class SysPostController extends BaseController  {
+export class SysPostController extends BaseController {
   constructor(
-    private readonly postService: SysPostService, 
-    private readonly excelUtils: ExcelUtils
+    private readonly postService: SysPostService,
+    private readonly excelUtils: ExcelUtils,
   ) {
     super();
   }
@@ -43,7 +57,9 @@ export class SysPostController extends BaseController  {
   @ApiOperation({ summary: '根据岗位编号获取详细信息' })
   @ApiResponse({ status: 200, type: AjaxResult })
   @Get(':postId')
-  async getInfo(@Param('postId', new DefaultValuePipe(0), ParseIntPipe) postId: number): Promise<AjaxResult> {
+  async getInfo(
+    @Param('postId', new DefaultValuePipe(0), ParseIntPipe) postId: number,
+  ): Promise<AjaxResult> {
     const data = await this.postService.selectPostById(postId);
     return AjaxResult.success(data);
   }
@@ -54,10 +70,10 @@ export class SysPostController extends BaseController  {
   @ApiResponse({ status: 200, type: AjaxResult })
   @Post()
   async add(@Body() post: SysPost): Promise<AjaxResult> {
-    if (!await this.postService.checkPostNameUnique(post)) {
+    if (!(await this.postService.checkPostNameUnique(post))) {
       return AjaxResult.error(`新增岗位'${post.postName}'失败，岗位名称已存在`);
     }
-    if (!await this.postService.checkPostCodeUnique(post)) {
+    if (!(await this.postService.checkPostCodeUnique(post))) {
       return AjaxResult.error(`新增岗位'${post.postName}'失败，岗位编码已存在`);
     }
     const result = await this.postService.insertPost(post);
@@ -70,10 +86,10 @@ export class SysPostController extends BaseController  {
   @ApiResponse({ status: 200, type: AjaxResult })
   @Put()
   async edit(@Body() post: SysPost): Promise<AjaxResult> {
-    if (!await this.postService.checkPostNameUnique(post)) {
+    if (!(await this.postService.checkPostNameUnique(post))) {
       return AjaxResult.error(`修改岗位'${post.postName}'失败，岗位名称已存在`);
     }
-    if (!await this.postService.checkPostCodeUnique(post)) {
+    if (!(await this.postService.checkPostCodeUnique(post))) {
       return AjaxResult.error(`修改岗位'${post.postName}'失败，岗位编码已存在`);
     }
     const result = await this.postService.updatePost(post);
@@ -85,7 +101,10 @@ export class SysPostController extends BaseController  {
   @ApiOperation({ summary: '删除岗位' })
   @ApiResponse({ status: 200, type: AjaxResult })
   @Delete(':postIds')
-  async remove(@Param('postIds',new ParseArrayPipe({ items: Number, separator: ',' })) postIds: number[]): Promise<AjaxResult> {
+  async remove(
+    @Param('postIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    postIds: number[],
+  ): Promise<AjaxResult> {
     const result = await this.postService.deletePostByIds(postIds);
     return AjaxResult.success(result);
   }

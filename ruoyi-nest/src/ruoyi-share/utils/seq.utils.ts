@@ -32,14 +32,18 @@ export class SeqUtils {
    * 默认16位序列号 yyMMddHHmmss + 一位机器标识 + 3长度循环递增字符串
    */
   getIdWithType(type: string): string {
-    const atomicInt = type === SeqUtils.UPLOAD_SEQ_TYPE ? SeqUtils.uploadSeq : SeqUtils.commSeq;
+    const atomicInt =
+      type === SeqUtils.UPLOAD_SEQ_TYPE ? SeqUtils.uploadSeq : SeqUtils.commSeq;
     return this.getIdWithLength(atomicInt, 3);
   }
 
   /**
    * 通用接口序列号 yyMMddHHmmss + 一位机器标识 + length长度循环递增字符串
    */
-  private getIdWithLength(atomicInt: { value: number }, length: number): string {
+  private getIdWithLength(
+    atomicInt: { value: number },
+    length: number,
+  ): string {
     let result = dayjs().format('YYMMDDHHmmss');
     result += SeqUtils.MACHINE_CODE;
     result += this.getSeq(atomicInt, length);

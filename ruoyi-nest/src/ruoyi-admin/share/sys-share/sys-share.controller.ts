@@ -13,7 +13,7 @@ import { GifUtils } from '~/ruoyi-share/utils/gif.utils';
 import { FileUploadUtils } from '~/ruoyi-share/utils/file-upload.utils';
 import { FileUtils } from '~/ruoyi-share/utils/file.utils';
 import { ServerConfigUtils } from '~/ruoyi-share/utils/server-config.utils';
-import {Response} from 'express'
+import { Response } from 'express';
 @ApiTags('通用')
 @Controller()
 export class SysShareController extends BaseController {
@@ -33,7 +33,7 @@ export class SysShareController extends BaseController {
   @Public()
   @Get('captchaImage')
   async getCaptcha() {
-    const ajax:any = this.success();
+    const ajax: any = this.success();
     const captchaEnabled = await this.configService.selectCaptchaEnabled();
     ajax.captchaEnabled = captchaEnabled;
 
@@ -64,12 +64,14 @@ export class SysShareController extends BaseController {
       image = `${buffer.toString('base64')}`;
     }
 
-    await this.redisCacheService.setCacheObjectWithTimeout(verifyKey, code, Constants.CAPTCHA_EXPIRATION * 60);
-
+    await this.redisCacheService.setCacheObjectWithTimeout(
+      verifyKey,
+      code,
+      Constants.CAPTCHA_EXPIRATION * 60,
+    );
 
     ajax.uuid = uuid;
     ajax.img = image;
-
 
     return ajax;
   }
@@ -77,19 +79,25 @@ export class SysShareController extends BaseController {
   @ApiOperation({ summary: '通用下载请求' })
   @Public()
   @Get('download')
-  async fileDownload(@Query('fileName') fileName: string, @Query('delete') isDelte: boolean, @Res() response:Response) {
+  async fileDownload(
+    @Query('fileName') fileName: string,
+    @Query('delete') isDelte: boolean,
+    @Res() response: Response,
+  ) {
     try {
       if (!this.fileUtils.checkAllowDownload(fileName)) {
         throw new Error(`文件名称(${fileName})非法，不允许下载。`);
       }
-      const realFileName = `${Date.now()}_${fileName.substring(fileName.indexOf("_") + 1)}`;
+      const realFileName = `${Date.now()}_${fileName.substring(fileName.indexOf('_') + 1)}`;
       const filePath = this.ruoYiConfigService.getDownloadPath() + fileName;
 
-  
-      response.header('Content-Type','application/octet-stream')
-    
+      response.header('Content-Type', 'application/octet-stream');
+
       this.fileUtils.setAttachmentResponseHeader(response, realFileName);
-      await this.fileUtils.writeBytes(filePath, response as unknown as NodeJS.WritableStream);
+      await this.fileUtils.writeBytes(
+        filePath,
+        response as unknown as NodeJS.WritableStream,
+      );
       if (isDelte) {
         this.fileUtils.deleteFile(filePath);
       }
@@ -106,9 +114,12 @@ export class SysShareController extends BaseController {
       // 上传文件路径
       const filePath = this.ruoYiConfigService.getUploadPath();
       // 上传并返回新文件名称
-      const fileName = await this.fileUploadUtils.uploadWithBaseDir(filePath, file);
+      const fileName = await this.fileUploadUtils.uploadWithBaseDir(
+        filePath,
+        file,
+      );
       const url = this.serverConfigUtils.getUrl(request) + fileName;
-      const ajax:any = this.success();
+      const ajax: any = this.success();
       ajax.url = url;
       ajax.fileName = fileName;
       ajax.newFileName = this.fileUtils.getName(fileName);
@@ -132,14 +143,17 @@ export class SysShareController extends BaseController {
       const originalFilenames = [];
       for (const file of files) {
         // 上传并返回新文件名称
-        const fileName = await this.fileUploadUtils.uploadWithBaseDir(filePath, file);
+        const fileName = await this.fileUploadUtils.uploadWithBaseDir(
+          filePath,
+          file,
+        );
         const url = this.serverConfigUtils.getUrl(request) + fileName;
         urls.push(url);
         fileNames.push(fileName);
         newFileNames.push(this.fileUtils.getName(fileName));
         originalFilenames.push(file.originalFilename);
       }
-      const ajax:any = this.success();
+      const ajax: any = this.success();
       ajax.urls = urls.join(',');
       ajax.fileNames = fileNames.join(',');
       ajax.newFileNames = newFileNames.join(',');
@@ -153,7 +167,10 @@ export class SysShareController extends BaseController {
   @ApiOperation({ summary: '本地资源通用下载' })
   @Public()
   @Get('download/resource')
-  async resourceDownload(@Query('resource') resource: string, @Res() response: Response) {
+  async resourceDownload(
+    @Query('resource') resource: string,
+    @Res() response: Response,
+  ) {
     try {
       if (!this.fileUtils.checkAllowDownload(resource)) {
         throw new Error(`资源文件(${resource})非法，不允许下载。`);
@@ -165,9 +182,12 @@ export class SysShareController extends BaseController {
       // 下载名称
       const downloadName = resource.substring(resource.lastIndexOf('/') + 1);
 
-      response.header('Content-Type','application/octet-stream')
+      response.header('Content-Type', 'application/octet-stream');
       this.fileUtils.setAttachmentResponseHeader(response, downloadName);
-      await this.fileUtils.writeBytes(downloadPath, response as unknown as NodeJS.WritableStream);
+      await this.fileUtils.writeBytes(
+        downloadPath,
+        response as unknown as NodeJS.WritableStream,
+      );
     } catch (error) {
       console.error('下载文件失败', error);
     }

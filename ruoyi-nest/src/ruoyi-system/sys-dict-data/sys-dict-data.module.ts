@@ -7,12 +7,9 @@ import { SysDictDataRepository } from './repositories/sys-dict-data.repository';
 const providers = [SysDictDataService, SysDictDataRepository];
 
 @Module({
-  imports: [
-
-    TypeOrmModule.forFeature([SysDictData]),
-  ],
+  imports: [TypeOrmModule.forFeature([SysDictData])],
   controllers: [],
   providers,
-  exports: [SysDictDataService,SysDictDataRepository]
+  exports: [SysDictDataService, SysDictDataRepository],
 })
 export class SysDictDataModule {}

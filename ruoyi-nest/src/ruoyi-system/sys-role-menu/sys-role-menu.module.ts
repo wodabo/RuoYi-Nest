@@ -7,12 +7,9 @@ import { SysRoleMenuRepository } from './repositories/sys-role-menu.repository';
 const providers = [SysRoleMenuRepository];
 
 @Module({
-  imports: [
-    RuoYiShareModule,
-    TypeOrmModule.forFeature([SysRoleMenu])
-  ],
+  imports: [RuoYiShareModule, TypeOrmModule.forFeature([SysRoleMenu])],
   controllers: [],
   providers,
-  exports: [SysRoleMenuRepository]
+  exports: [SysRoleMenuRepository],
 })
 export class SysRoleMenuModule {}

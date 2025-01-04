@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RuoYiConfigService } from '~/ruoyi-share/config/ruoyi-config.service';
 import { DemoModeException } from '~/ruoyi-share/exception/DemoModeException';

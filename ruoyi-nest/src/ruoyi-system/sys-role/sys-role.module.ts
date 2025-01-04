@@ -16,10 +16,10 @@ const providers = [SysRoleService, SysRoleRepository];
     TypeOrmModule.forFeature([SysRole]),
     SysRoleMenuModule,
     SysUserRoleModule,
-    SysRoleDeptModule
+    SysRoleDeptModule,
   ],
   controllers: [],
   providers,
-  exports: [SysRoleService,SysRoleRepository]
+  exports: [SysRoleService, SysRoleRepository],
 })
 export class SysRoleModule {}

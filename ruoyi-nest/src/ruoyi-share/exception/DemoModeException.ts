@@ -1,36 +1,34 @@
 /**
  * 演示模式异常
- * 
+ *
  * @author ruoyi
  */
 export class DemoModeException extends Error {
-    private code: number;
-    private detailMessage: string;
+  private code: number;
+  private detailMessage: string;
 
-    constructor();
-    constructor(message: string);
-    constructor(message: string, code: number);
-    constructor(message?: string, code?: number) {
-        super(message);
-        if (message) {
-            this.message = message;
-        }
-        if (code) {
-            this.code = code;
-        }
+  constructor();
+  constructor(message: string);
+  constructor(message: string, code: number);
+  constructor(message?: string, code?: number) {
+    super(message);
+    if (message) {
+      this.message = message;
     }
-
-    getDetailMessage(): string {
-        return this.detailMessage;
+    if (code) {
+      this.code = code;
     }
+  }
 
-    getMessage(): string {
-        return this.message;
-    }
+  getDetailMessage(): string {
+    return this.detailMessage;
+  }
 
-    getCode(): number {
-        return this.code;
-    }
+  getMessage(): string {
+    return this.message;
+  }
 
-
+  getCode(): number {
+    return this.code;
+  }
 }

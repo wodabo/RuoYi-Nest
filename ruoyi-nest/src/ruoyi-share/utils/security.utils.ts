@@ -13,17 +13,12 @@ import { ContextHolderUtils } from './context-holder.utils';
 
 /**
  * 安全服务工具类
- * 
+ *
  * @author ruoyi
  */
 @Injectable()
 export class SecurityUtils {
-
-
-  constructor(
-    private readonly contextHolderUtils: ContextHolderUtils
-) {
-}    
+  constructor(private readonly contextHolderUtils: ContextHolderUtils) {}
 
   /**
    * 获取用户
@@ -31,20 +26,19 @@ export class SecurityUtils {
   getLoginUser(): LoginUser {
     try {
       const request = this.contextHolderUtils.getContext('request');
-      const user:LoginUser = request['user'] as LoginUser;  
+      const user: LoginUser = request['user'] as LoginUser;
       if (!user) {
         throw new Error('No user found in request context');
       }
       return user;
     } catch (e) {
-      throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
+      throw new ServiceException('获取用户信息异常', HttpStatus.UNAUTHORIZED);
     }
   }
 
-
   /**
    * 生成BCryptPasswordEncoder密码
-   * 
+   *
    * @param password 密码
    * @return 加密字符串
    */
@@ -55,7 +49,7 @@ export class SecurityUtils {
 
   /**
    * 判断密码是否相同
-   * 
+   *
    * @param rawPassword 真实密码
    * @param encodedPassword 加密后字符
    * @return 结果
@@ -73,6 +67,4 @@ export class SecurityUtils {
     }
     return user.userId !== null && user.userId === 1;
   }
-
-
 }

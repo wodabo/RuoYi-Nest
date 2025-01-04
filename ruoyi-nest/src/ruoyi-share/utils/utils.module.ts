@@ -1,4 +1,14 @@
-import { Module, Global, Injectable, NestMiddleware, MiddlewareConsumer, NestModule, ExecutionContext, CallHandler, NestInterceptor } from '@nestjs/common';
+import {
+  Module,
+  Global,
+  Injectable,
+  NestMiddleware,
+  MiddlewareConsumer,
+  NestModule,
+  ExecutionContext,
+  CallHandler,
+  NestInterceptor,
+} from '@nestjs/common';
 import { AddressUtils } from './address.utils';
 import { ShareConfigModule } from '../config/share-config.module';
 import { GifUtils } from './gif.utils';
@@ -27,7 +37,7 @@ import { SysLogininforModule } from '~/ruoyi-system/sys-logininfor/sys-logininfo
 import { SysOperlogModule } from '~/ruoyi-system/sys-operlog/sys-operlog.module';
 import { FileUtils } from './file.utils';
 import { FileTypeUtils } from './file-type.utils';
-import { ServerConfigUtils } from './server-config.utils';  
+import { ServerConfigUtils } from './server-config.utils';
 import { ScheduleUtils } from './schedule.utils';
 import { SqlUtils } from './sql.utils';
 import { GenUtils } from './gen.utils';
@@ -62,14 +72,14 @@ const providers = [
   ScheduleUtils,
   SqlUtils,
   GenUtils,
-  HbsUtils
+  HbsUtils,
 ];
 
 @Global()
 @Module({
   imports: [
-    ShareConfigModule, 
-    RedisModule, 
+    ShareConfigModule,
+    RedisModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -78,7 +88,7 @@ const providers = [
             host: configService.get('nest.redis.host'),
             port: configService.get('nest.redis.port'),
           },
-        }
+        };
       },
       inject: [ConfigService],
     }),
@@ -87,12 +97,9 @@ const providers = [
     }),
     SysLogininforModule,
     SysOperlogModule,
-    GenConfigModule
+    GenConfigModule,
   ],
   providers: providers,
-  exports: providers
+  exports: providers,
 })
-export class UtilsModule {
-
-}
-
+export class UtilsModule {}

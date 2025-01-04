@@ -5,15 +5,12 @@ import { SysRoleModule } from '~/ruoyi-system/sys-role/sys-role.module';
 import { SysMenuModule } from '~/ruoyi-system/sys-menu/sys-menu.module';
 import { PermissionValidatorService } from './permission-validator.service';
 
-const providers = [SysPermissionService,PermissionValidatorService];
+const providers = [SysPermissionService, PermissionValidatorService];
 
 @Module({
-  imports: [
-    SysRoleModule,
-    SysMenuModule
-  ],
+  imports: [SysRoleModule, SysMenuModule],
   controllers: [],
   providers,
-  exports: [SysPermissionService,PermissionValidatorService]
+  exports: [SysPermissionService, PermissionValidatorService],
 })
 export class PermissionModule {}

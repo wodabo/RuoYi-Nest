@@ -1,14 +1,13 @@
-import { StringUtils } from "./string.utils"
+import { StringUtils } from './string.utils';
 
-
-export class HbsServiceRenderUtils { 
-
-    public static renderHeader(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+export class HbsServiceRenderUtils {
+  public static renderHeader(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 import { Injectable } from '@nestjs/common';
 import { ${context.ClassName}Repository } from '~/${context.packageName}/${tableNameWithMiddleLine}/repositories/${tableNameWithMiddleLine}.repository';
 import { ${context.ClassName} } from '~/${context.packageName}/${tableNameWithMiddleLine}/entities/${tableNameWithMiddleLine}.entity';
@@ -21,14 +20,15 @@ import { ${context.ClassName} } from '~/${context.packageName}/${tableNameWithMi
  * @date ${context.datetime}
  *
  */
-        `
-    }
-    public static renderClass(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+        `;
+  }
+  public static renderClass(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 @Injectable()
 export class ${context.ClassName}Service {
   constructor(
@@ -60,7 +60,6 @@ export class ${context.ClassName}Service {
   }
 }
 
-        `
-    }
-
+        `;
+  }
 }

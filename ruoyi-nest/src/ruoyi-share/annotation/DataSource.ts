@@ -10,4 +10,6 @@ import { DataSourceType } from '../enums/DataSourceType';
  */
 export const DATA_SOURCE_KEY = 'data_source';
 
-export const DataSource = (dataSource: DataSourceType = DataSourceType.MASTER) => SetMetadata(DATA_SOURCE_KEY, dataSource);
+export const DataSource = (
+  dataSource: DataSourceType = DataSourceType.MASTER,
+) => SetMetadata(DATA_SOURCE_KEY, dataSource);

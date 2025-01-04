@@ -2,6 +2,6 @@ import { Module } from '@nestjs/common';
 import { GenModule } from './gen/gen.module';
 
 @Module({
-  imports: [GenModule]
+  imports: [GenModule],
 })
 export class RuoYiGeneratorModule {}

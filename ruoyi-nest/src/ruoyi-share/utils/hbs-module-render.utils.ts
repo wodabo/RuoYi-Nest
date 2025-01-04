@@ -1,14 +1,13 @@
-import { StringUtils } from "./string.utils"
+import { StringUtils } from './string.utils';
 
-
-export class HbsModuleRenderUtils { 
-
-    public static renderHeader(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+export class HbsModuleRenderUtils {
+  public static renderHeader(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ${context.ClassName}Service } from '~/${context.packageName}/${tableNameWithMiddleLine}/${tableNameWithMiddleLine}.service';
@@ -24,15 +23,16 @@ import { RedisModule } from '~/ruoyi-share/redis/redis.module';
  * @date ${context.datetime}
  *
  */
-        `
-    }
-    public static renderClass(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        const preAuthorizePrefix = `${context.moduleName}:${tableNameWithMiddleLine}:`
-        return `
+        `;
+  }
+  public static renderClass(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    const preAuthorizePrefix = `${context.moduleName}:${tableNameWithMiddleLine}:`;
+    return `
 
 
 const providers = [${context.ClassName}Service, ${context.ClassName}Repository];
@@ -48,7 +48,6 @@ const providers = [${context.ClassName}Service, ${context.ClassName}Repository];
 })
 export class ${context.ClassName}Module {}
 
-        `
-    }
-
+        `;
+  }
 }

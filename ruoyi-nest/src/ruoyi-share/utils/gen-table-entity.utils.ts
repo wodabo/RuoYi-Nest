@@ -16,10 +16,12 @@ export class GenTableEntityUtils {
 
   static isSuperColumn(obj: GenTable, value: string): boolean {
     if (obj.tplCategory === GenConstants.TPL_TREE) {
-        return [...GenConstants.TREE_ENTITY, ...GenConstants.BASE_ENTITY].some(d => d?.toLowerCase() === value?.toLowerCase());
-      }
-      return GenConstants.BASE_ENTITY.some(d => d?.toLowerCase() === value?.toLowerCase());
+      return [...GenConstants.TREE_ENTITY, ...GenConstants.BASE_ENTITY].some(
+        (d) => d?.toLowerCase() === value?.toLowerCase(),
+      );
+    }
+    return GenConstants.BASE_ENTITY.some(
+      (d) => d?.toLowerCase() === value?.toLowerCase(),
+    );
   }
-
-
 }

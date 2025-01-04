@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SysUserService } from './sys-user.service';
 
-
 import { SysUser } from '~/ruoyi-system/sys-user/entities/sys-user.entity';
 import { SysUserRepository } from '~/ruoyi-system/sys-user/repositories/sys-user.repository';
 import { SysUserRoleModule } from '~/ruoyi-system/sys-user-role/sys-user-role.module';
@@ -21,10 +20,10 @@ const providers = [SysUserService, SysUserRepository];
     SysRoleModule,
     SysPostModule,
     SysConfigModule,
-    SysDeptModule
+    SysDeptModule,
   ],
   controllers: [],
   providers,
-  exports: [SysUserService,SysUserRepository]
+  exports: [SysUserService, SysUserRepository],
 })
 export class SysUserModule {}

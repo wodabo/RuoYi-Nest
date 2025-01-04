@@ -9,17 +9,17 @@ import { GlobalAuthGuard } from '~/ruoyi-framework/auth/jwt/jwt-auth.guard';
 import { JwtStrategy } from '~/ruoyi-framework/auth/jwt/jwt-strategy';
 import { SysUserModule } from '~/ruoyi-system/sys-user/sys-user.module';
 import { PermissionModule } from '~/ruoyi-share/permission/permission.module';
-import {RedisModule} from '~/ruoyi-share/redis/redis.module';
+import { RedisModule } from '~/ruoyi-share/redis/redis.module';
 import { ShareConfigModule } from '~/ruoyi-share/config/share-config.module';
 import { TokenConfigService } from '~/ruoyi-share/config/token-config.service';
 const providers = [
-    JwtAuthService,
-    JwtStrategy,
-    {
-        provide: APP_GUARD,
-        useClass: GlobalAuthGuard,
-    },
-]
+  JwtAuthService,
+  JwtStrategy,
+  {
+    provide: APP_GUARD,
+    useClass: GlobalAuthGuard,
+  },
+];
 
 @Module({
   imports: [
@@ -32,8 +32,8 @@ const providers = [
       imports: [ShareConfigModule],
       useFactory: async (tokenConfigService: TokenConfigService) => ({
         secret: tokenConfigService.getSecret(),
-        signOptions: { 
-          expiresIn: tokenConfigService.getExpireTime() 
+        signOptions: {
+          expiresIn: tokenConfigService.getExpireTime(),
         },
       }),
       inject: [TokenConfigService],

@@ -10,41 +10,44 @@ import * as dayjs from 'dayjs';
 export class ExcelUtils {
   /**
    * 对list数据源将其里面的数据导入到excel表单
-   * 
+   *
    * @param sheetName 工作表的名称
    * @param title 标题
    * @return 结果
    */
-  public async importTemplateExcel(res: Response, sheetName: string, clazz: any) {
+  public async importTemplateExcel(
+    res: Response,
+    sheetName: string,
+    clazz: any,
+  ) {
     // 创建工作簿
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(sheetName);
 
-
     // 获取类的元数据
-    const excelFields = (Reflect.getMetadata('excel', clazz) || [])
-      .filter(field => field.options.isExport); // 过滤掉导入类型的字段
+    const excelFields = (Reflect.getMetadata('excel', clazz) || []).filter(
+      (field) => field.options.isExport,
+    ); // 过滤掉导入类型的字段
 
     // 设置表头
-    const headers = excelFields.map(field => {
+    const headers = excelFields.map((field) => {
       return {
         header: field.options.name,
         key: field.options.targetAttr || field.property,
-        width: field.options.width
+        width: field.options.width,
       };
     });
 
     worksheet.columns = headers;
 
-
     // 设置响应头
     res.setHeader(
       'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(sheetName) + '.xlsx'
+      'attachment; filename=' + encodeURIComponent(sheetName) + '.xlsx',
     );
 
     // 写入响应
@@ -59,26 +62,26 @@ export class ExcelUtils {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(sheetName);
 
-
     // 获取类的元数据
-    const excelFields = (Reflect.getMetadata('excel', clazz) || [])
-      .filter(field => field.options.isExport); // 过滤掉导入类型的字段
+    const excelFields = (Reflect.getMetadata('excel', clazz) || []).filter(
+      (field) => field.options.isExport,
+    ); // 过滤掉导入类型的字段
 
     // 设置表头
-    const headers = excelFields.map(field => {
+    const headers = excelFields.map((field) => {
       return {
         header: field.options.name,
         key: field.options.targetAttr || field.property,
-        width: field.options.width
+        width: field.options.width,
       };
     });
 
     worksheet.columns = headers;
 
     // 添加数据
-    list.forEach(item => {
+    list.forEach((item) => {
       const row = {};
-      excelFields.forEach(field => {
+      excelFields.forEach((field) => {
         let value;
         if (field.options.targetAttr) {
           // 处理嵌套对象的属性
@@ -96,9 +99,14 @@ export class ExcelUtils {
         if (field.options.cellType === ColumnType.NUMERIC) {
           row[field.options.targetAttr || field.property] = Number(value);
         } else if (field.options.dateFormat && value) {
-          row[field.options.targetAttr || field.property] = dayjs(value).format(field.options.dateFormat);
+          row[field.options.targetAttr || field.property] = dayjs(value).format(
+            field.options.dateFormat,
+          );
         } else if (field.options.readConverterExp) {
-          row[field.options.targetAttr || field.property] = this.convertByExp(value, field.options.readConverterExp);
+          row[field.options.targetAttr || field.property] = this.convertByExp(
+            value,
+            field.options.readConverterExp,
+          );
         } else {
           row[field.options.targetAttr || field.property] = value;
         }
@@ -109,11 +117,11 @@ export class ExcelUtils {
     // 设置响应头
     res.setHeader(
       'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(sheetName) + '.xlsx'
+      'attachment; filename=' + encodeURIComponent(sheetName) + '.xlsx',
     );
 
     // 写入响应
@@ -150,13 +158,14 @@ export class ExcelUtils {
     const worksheet = workbook.worksheets[0];
 
     // 获取类的元数据
-    const excelFields = (Reflect.getMetadata('excel', clazz) || [])
-      .filter(field => field.options.type !== ExcelType.EXPORT); // 过滤掉导出类型的字段
+    const excelFields = (Reflect.getMetadata('excel', clazz) || []).filter(
+      (field) => field.options.type !== ExcelType.EXPORT,
+    ); // 过滤掉导出类型的字段
 
     // 获取表头映射
     const headerMap = new Map<number, any>();
     const headers: any = worksheet.getRow(1).values;
-    excelFields.forEach(field => {
+    excelFields.forEach((field) => {
       const columnIndex = headers.indexOf(field.options.name);
       if (columnIndex > 0) {
         headerMap.set(columnIndex, field);
@@ -238,6 +247,6 @@ export class ExcelUtils {
       return true;
     }
     const values: any = row.values;
-    return values.every(value => !value);
+    return values.every((value) => !value);
   }
 }

@@ -1,10 +1,4 @@
-import { 
-  Controller, 
-  Get, 
-  Post,
-  Body,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { SysLoginService } from '~/ruoyi-admin/system/sys-login/sys-login.service';
 import { JwtAuthService } from '~/ruoyi-framework/auth/jwt/jwt-auth-service';
@@ -37,7 +31,7 @@ export class SysLoginController {
       LoginBodyDto.password,
       LoginBodyDto.code,
       LoginBodyDto.uuid,
-      req
+      req,
     );
 
     const success = AjaxResult.success();
@@ -49,7 +43,6 @@ export class SysLoginController {
   @Post('logout')
   @ApiOperation({ summary: '登出方法' })
   async logout(@Request() req) {
-
     this.jwtAuthService.logout(req);
     const success = AjaxResult.success();
     return success;
@@ -58,7 +51,6 @@ export class SysLoginController {
   @Get('getInfo')
   @ApiOperation({ summary: '获取用户信息' })
   async getInfo(@Request() req) {
-
     const loginUser = req.user;
 
     // 角色集合
@@ -71,11 +63,11 @@ export class SysLoginController {
         ...loginUser.user,
       },
       roles: [...roles],
-      permissions: loginUser.permissions
+      permissions: loginUser.permissions,
     };
   }
 
-  @Get('getRouters') 
+  @Get('getRouters')
   @ApiOperation({ summary: '获取路由信息' })
   async getRouters(@Request() req) {
     const loginUser = req.user;
@@ -87,7 +79,7 @@ export class SysLoginController {
     return {
       code: 200,
       msg: 'success',
-      data: routers
+      data: routers,
     };
   }
 }

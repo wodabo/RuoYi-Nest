@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { GenConfigService } from './gen-config.service';
 
-
 const providers = [GenConfigService];
 @Module({
-  imports: [
-  ],
+  imports: [],
   controllers: [],
   providers,
-  exports: [GenConfigService]
+  exports: [GenConfigService],
 })
 export class GenConfigModule {}

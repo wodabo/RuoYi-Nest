@@ -7,12 +7,9 @@ import { SysUserRoleRepository } from './repositories/sys-user-role.repository';
 const providers = [SysUserRoleRepository];
 
 @Module({
-  imports: [
-    RuoYiShareModule,
-    TypeOrmModule.forFeature([SysUserRole])
-  ],
+  imports: [RuoYiShareModule, TypeOrmModule.forFeature([SysUserRole])],
   controllers: [],
   providers,
-  exports: [SysUserRoleRepository]
+  exports: [SysUserRoleRepository],
 })
 export class SysUserRoleModule {}

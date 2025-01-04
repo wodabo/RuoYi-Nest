@@ -8,8 +8,6 @@ import { GenTableColumnModule } from '../gen-table-column/gen-table-column.modul
 
 import { GenConfigModule } from '~/ruoyi-generator/gen-config/gen-config.module';
 
-
-
 const providers = [GenTableService, GenTableRepository];
 @Module({
   imports: [
@@ -19,6 +17,6 @@ const providers = [GenTableService, GenTableRepository];
   ],
   controllers: [],
   providers,
-  exports: [GenTableService, GenTableRepository]
+  exports: [GenTableService, GenTableRepository],
 })
 export class GenTableModule {}

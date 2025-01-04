@@ -7,11 +7,9 @@ import { SysNoticeRepository } from './repositories/sys-notice.repository';
 const providers = [SysNoticeService, SysNoticeRepository];
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SysNotice])
-  ],
+  imports: [TypeOrmModule.forFeature([SysNotice])],
   controllers: [],
   providers,
-  exports: [SysNoticeService]
+  exports: [SysNoticeService],
 })
 export class SysNoticeModule {}

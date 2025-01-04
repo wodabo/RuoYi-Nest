@@ -1,14 +1,13 @@
-import { StringUtils } from "./string.utils"
-
+import { StringUtils } from './string.utils';
 
 export class HbsRepositoryRenderUtils {
-
-    public static renderHeader(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+  public static renderHeader(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 import { Injectable } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,50 +23,53 @@ import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
  * @date ${context.datetime}
  *
  */
-        `
-    }
+        `;
+  }
 
-    public static renderConstructor(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        return `
+  public static renderConstructor(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    return `
     constructor(
         @InjectRepository(${context.ClassName})
         private readonly ${ClassNameWithoutSysPrefixAndLowerCaseFirstLetter}Repository: Repository<${context.ClassName}>,
         private readonly queryUtils: QueryUtils,
         private readonly sqlLoggerUtils: SqlLoggerUtils
     ) {}
-        `
-    }
+        `;
+  }
 
-    public static renderSelectVo(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const indent = ' '.repeat(16);  // 16个空格的缩进     
-        return `
+  public static renderSelectVo(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const indent = ' '.repeat(16); // 16个空格的缩进
+    return `
     private select${ClassNameWithoutSysPrefix}Vo(): SelectQueryBuilder<${context.ClassName}> {
         return this.${ClassNameWithoutSysPrefixAndLowerCaseFirstLetter}Repository.createQueryBuilder('${alias}')
             .select([
-                ${
-                    context.columns.map((column,index) => {
-                        if(index === 0){
-                            return `'${alias}.${column.tsField}'`
-                        }
-                        return `${indent}'${alias}.${column.tsField}'`
-                    }).join(',\n')
-                }       
+                ${context.columns
+                  .map((column, index) => {
+                    if (index === 0) {
+                      return `'${alias}.${column.tsField}'`;
+                    }
+                    return `${indent}'${alias}.${column.tsField}'`;
+                  })
+                  .join(',\n')}       
             ])
     }
-        `
-    }
+        `;
+  }
 
-    public static renderSelectById(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        return `
+  public static renderSelectById(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    return `
     /**
      * 查询${context.ClassName}信息
      */
@@ -78,66 +80,68 @@ import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
         this.sqlLoggerUtils.log(queryBuilder, 'select${ClassNameWithoutSysPrefix}ById');
         return queryBuilder.getOne();
     }
-        `
-    }
+        `;
+  }
 
-    public static renderSelectList(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        return `
+  public static renderSelectList(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    return `
     /**
      * 查询${context.ClassName}列表
      */
     async select${ClassNameWithoutSysPrefix}List(query: ${context.ClassName}): Promise<[${context.ClassName}[], number]> {
         const queryBuilder = this.select${ClassNameWithoutSysPrefix}Vo();
-        ${
-            context.columns.map(column => {
-                let andWhereStatement = ''
-                if(column.queryType === 'LIKE'){
-                    andWhereStatement = `queryBuilder.andWhere('${alias}.${column.tsField} LIKE :${column.tsField}Like', { ${column.tsField}Like: '%' + query.${column.tsField} + '%' });`
-                }else{
-                    andWhereStatement = `queryBuilder.andWhere('${alias}.${column.tsField} = :${column.tsField}', { ${column.tsField}: query.${column.tsField} });`
-                }
-                return `
+        ${context.columns
+          .map((column) => {
+            let andWhereStatement = '';
+            if (column.queryType === 'LIKE') {
+              andWhereStatement = `queryBuilder.andWhere('${alias}.${column.tsField} LIKE :${column.tsField}Like', { ${column.tsField}Like: '%' + query.${column.tsField} + '%' });`;
+            } else {
+              andWhereStatement = `queryBuilder.andWhere('${alias}.${column.tsField} = :${column.tsField}', { ${column.tsField}: query.${column.tsField} });`;
+            }
+            return `
         if (query.${column.tsField}) {
             ${andWhereStatement}
         }
-                `
-            }).join('\n')
-        }
+                `;
+          })
+          .join('\n')}
 
         this.sqlLoggerUtils.log(queryBuilder, 'select${ClassNameWithoutSysPrefix}List');
         return this.queryUtils.executeQuery(queryBuilder, query);
     }
-        `
-    }
+        `;
+  }
 
-    public static renderInsert(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        return `
+  public static renderInsert(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    return `
     /**
      * 新增${context.className}
      */
     async insert${ClassNameWithoutSysPrefix}(${context.className}: ${context.ClassName}): Promise<number> {
         const insertObj: any = {};
-        ${
-        context.columns.map(column => {
-            let condition = `${context.className}.${column.tsField} != null`
+        ${context.columns
+          .map((column) => {
+            let condition = `${context.className}.${column.tsField} != null`;
 
-            if(column.tsType === 'number'){
-                condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`
-            }else if(column.tsType === 'string'){
-                condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`
-            } 
-            
+            if (column.tsType === 'number') {
+              condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`;
+            } else if (column.tsType === 'string') {
+              condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`;
+            }
+
             return `
         if (${condition}) {
             insertObj.${column.tsField} = ${context.className}.${column.tsField};
-        }`
-        }).join('\n')
-        }
+        }`;
+          })
+          .join('\n')}
         const queryBuilder = this.${ClassNameWithoutSysPrefixAndLowerCaseFirstLetter}Repository.createQueryBuilder()
             .insert()
             .into(${context.ClassName},Object.keys(insertObj))
@@ -147,34 +151,35 @@ import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
         const result = await queryBuilder.execute();
         return result.identifiers[0].${context.pkColumn.tsField}
     }
-        `
-    }
+        `;
+  }
 
-    public static renderUpdate(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        return `
+  public static renderUpdate(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    return `
     /**
      * 修改${context.className}
      */
     async update${ClassNameWithoutSysPrefix}(${context.className}: ${context.ClassName}): Promise<boolean> {
         const updateData: any = {};
-        ${
-            context.columns.map(column => {
-                let condition = `${context.className}.${column.tsField} != null`
+        ${context.columns
+          .map((column) => {
+            let condition = `${context.className}.${column.tsField} != null`;
 
-                if(column.tsType === 'number'){
-                    condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`
-                }else if(column.tsType === 'string'){
-                    condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`
-                } 
-                
+            if (column.tsType === 'number') {
+              condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`;
+            } else if (column.tsType === 'string') {
+              condition = `${context.className}.${column.tsField} != null && ${context.className}.${column.tsField} != ${column.tsType === 'number' ? '0' : "''"}`;
+            }
+
             return `
         if (${condition}) {
             updateData.${column.tsField} = ${context.className}.${column.tsField};
-        }`
-        }).join('\n')
-        }
+        }`;
+          })
+          .join('\n')}
         const queryBuilder = this.${ClassNameWithoutSysPrefixAndLowerCaseFirstLetter}Repository.createQueryBuilder()
             .update(${context.ClassName})
             .set(updateData)
@@ -184,14 +189,15 @@ import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
         const result = await queryBuilder.execute();
         return result.affected > 0;
     }
-        `
-    }
+        `;
+  }
 
-    public static renderDeleteByIds(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        return `
+  public static renderDeleteByIds(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    return `
     /**
      * 删除${context.ClassName}信息
      */
@@ -205,7 +211,6 @@ import { SqlLoggerUtils } from '~/ruoyi-share/utils/sql-logger.utils';
         const result = await queryBuilder.execute();
         return result.affected > 0;
     }
-        `
-        
-    }
+        `;
+  }
 }

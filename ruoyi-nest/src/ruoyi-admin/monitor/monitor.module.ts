@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SysLogininforModule } from '~/ruoyi-system/sys-logininfor/sys-logininfor.module';
@@ -12,7 +11,6 @@ import { RedisModule } from '~/ruoyi-share/redis/redis.module';
 import { ServerController } from '~/ruoyi-admin/monitor/server/server.controller';
 import { CacheController } from '~/ruoyi-admin/monitor/cache/cache.controller';
 
-
 const providers = [];
 
 @Module({
@@ -20,10 +18,16 @@ const providers = [];
     SysLogininforModule,
     SysOperlogModule,
     SysUserOnlineModule,
-    RedisModule
+    RedisModule,
   ],
-  controllers: [SysLogininforController, SysOperlogController,SysUserOnlineController,ServerController,CacheController],
+  controllers: [
+    SysLogininforController,
+    SysOperlogController,
+    SysUserOnlineController,
+    ServerController,
+    CacheController,
+  ],
   providers,
-  exports: []
+  exports: [],
 })
 export class MonitorModule {}

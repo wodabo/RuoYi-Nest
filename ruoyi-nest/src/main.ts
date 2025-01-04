@@ -13,25 +13,23 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { join } from 'path';
 
-
-
 /**
  * Web容器初始化
- * 
+ *
  * @author ruoyi
  */
 class RuoYiServletInitializer {
   public static async bootstrap(): Promise<NestExpressApplication> {
-    const app = await NestFactory.create<NestExpressApplication>(RuoYiAdminModule);
+    const app =
+      await NestFactory.create<NestExpressApplication>(RuoYiAdminModule);
     // 确保这行代码存在
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(
-      app.get(Reflector),
-      {
+    app.useGlobalInterceptors(
+      new ClassSerializerInterceptor(app.get(Reflector), {
         enableCircularCheck: false,
         excludeExtraneousValues: false,
         exposeUnsetFields: false,
-      }
-    ));
+      }),
+    );
     // 全局注册转换拦截器
     app.useGlobalInterceptors(new TransformInterceptor());
     // 注册全局异常过滤器
@@ -39,16 +37,14 @@ class RuoYiServletInitializer {
 
     // 注册全局守卫
     // app.useGlobalGuards(new GlobalAuthGuard(app.get(JwtAuthService), app.get(Reflector)));
-    app.enableCors({ origin: '*', credentials: true })
-
-
+    app.enableCors({ origin: '*', credentials: true });
 
     // Swagger配置
     const config = new DocumentBuilder()
       .setTitle('RuoYi API')
       .setDescription('RuoYi后台管理系统API文档')
       .setVersion('1.0')
-        // 添加服务器配置，这会在Swagger UI中显示
+      // 添加服务器配置，这会在Swagger UI中显示
       .addServer('/dev-api', '开发环境')
       // 添加JWT认证
       // .addBearerAuth(
@@ -85,10 +81,12 @@ class RuoYiServletInitializer {
       // 设置JSON文档路径
       jsonDocumentUrl: '/swagger-ui/api-json',
       // 设置YAML文档路径
-      yamlDocumentUrl: '/swagger-ui/api-yaml'
+      yamlDocumentUrl: '/swagger-ui/api-yaml',
     });
 
-    app.setBaseViewsDir([join(__dirname, 'ruoyi-generator', 'resources', 'vm')]);
+    app.setBaseViewsDir([
+      join(__dirname, 'ruoyi-generator', 'resources', 'vm'),
+    ]);
     app.setViewEngine('hbs');
 
     await app.listen(process.env.PORT ?? 3000);

@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-
 /**
  * ID生成器工具类
  */
 @Injectable()
 export class UuidUtils {
-
   /**
    * 获取随机UUID
    * @returns 随机UUID
@@ -39,5 +37,4 @@ export class UuidUtils {
   fastSimpleUUID(): string {
     return uuidv4().replace(/-/g, '');
   }
-
 }

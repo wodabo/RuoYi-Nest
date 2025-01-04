@@ -7,33 +7,31 @@ import { SysJobLogRepository } from '~/ruoyi-quartz/sys-job-log/repositories/sys
 
 @Injectable()
 export class SysJobLogService {
-    private readonly logger = new Logger(SysJobLogService.name);
+  private readonly logger = new Logger(SysJobLogService.name);
 
-    constructor(
-        private readonly jobLogRepository: SysJobLogRepository,
-    ) {}
+  constructor(private readonly jobLogRepository: SysJobLogRepository) {}
 
-    async selectJobLogList(jobLog: SysJobLog): Promise<[SysJobLog[], number]> {
-        return this.jobLogRepository.selectJobLogList(jobLog);  
-    }
+  async selectJobLogList(jobLog: SysJobLog): Promise<[SysJobLog[], number]> {
+    return this.jobLogRepository.selectJobLogList(jobLog);
+  }
 
-    async selectJobLogById(jobLogId: number): Promise<SysJobLog> {
-        return this.jobLogRepository.selectJobLogById(jobLogId);
-    }
+  async selectJobLogById(jobLogId: number): Promise<SysJobLog> {
+    return this.jobLogRepository.selectJobLogById(jobLogId);
+  }
 
-    async addJobLog(jobLog: SysJobLog): Promise<void> {
-        await this.jobLogRepository.insertJobLog(jobLog);
-    }
+  async addJobLog(jobLog: SysJobLog): Promise<void> {
+    await this.jobLogRepository.insertJobLog(jobLog);
+  }
 
-    async deleteJobLogByIds(logIds: number[]): Promise<void> {
-        await this.jobLogRepository.deleteJobLogByIds(logIds);
-    }
+  async deleteJobLogByIds(logIds: number[]): Promise<void> {
+    await this.jobLogRepository.deleteJobLogByIds(logIds);
+  }
 
-    async deleteJobLogById(jobId: number): Promise<void> {
-        await this.jobLogRepository.deleteJobLogById(jobId);
-    }
+  async deleteJobLogById(jobId: number): Promise<void> {
+    await this.jobLogRepository.deleteJobLogById(jobId);
+  }
 
-    async cleanJobLog(): Promise<void> {
-        await this.jobLogRepository.cleanJobLog();
-    }
+  async cleanJobLog(): Promise<void> {
+    await this.jobLogRepository.cleanJobLog();
+  }
 }

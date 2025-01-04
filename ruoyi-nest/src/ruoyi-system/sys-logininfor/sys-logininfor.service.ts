@@ -4,15 +4,15 @@ import { SysLogininfor } from './entities/sys-logininfor.entity';
 
 @Injectable()
 export class SysLogininforService {
-  constructor(
-    private readonly logininforRepository: SysLogininforRepository,
-  ) {}
+  constructor(private readonly logininforRepository: SysLogininforRepository) {}
 
   async insertLogininfor(logininfor: SysLogininfor): Promise<void> {
     await this.logininforRepository.insertLogininfor(logininfor);
   }
 
-  async selectLogininforList(query: SysLogininfor): Promise<[SysLogininfor[], number]> {
+  async selectLogininforList(
+    query: SysLogininfor,
+  ): Promise<[SysLogininfor[], number]> {
     return this.logininforRepository.selectLogininforList(query);
   }
 

@@ -14,10 +14,10 @@ const providers = [SysMenuService, SysMenuRepository];
     RuoYiShareModule,
     TypeOrmModule.forFeature([SysMenu]),
     SysRoleModule,
-    SysRoleMenuModule
+    SysRoleMenuModule,
   ],
   controllers: [],
   providers,
-  exports: [SysMenuService]
+  exports: [SysMenuService],
 })
 export class SysMenuModule {}

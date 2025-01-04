@@ -23,6 +23,6 @@ import { SysNoticeModule } from './sys-notice/sys-notice.module';
     SysRoleDeptModule,
     SysConfigModule,
     SysNoticeModule,
-  ]
+  ],
 })
 export class RuoYiSystemModule {}

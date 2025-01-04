@@ -1,6 +1,6 @@
-import { 
-  Controller, 
-  Get, 
+import {
+  Controller,
+  Get,
   Post,
   Put,
   Delete,
@@ -25,10 +25,10 @@ import { Log } from '~/ruoyi-share/annotation/Log';
 
 @ApiTags('数据字典信息')
 @Controller('/system/dict/type')
-export class SysDictTypeController extends BaseController   {
+export class SysDictTypeController extends BaseController {
   constructor(
     private readonly dictTypeService: SysDictTypeService,
-    private readonly excelUtils: ExcelUtils,  
+    private readonly excelUtils: ExcelUtils,
   ) {
     super();
   }
@@ -37,11 +37,11 @@ export class SysDictTypeController extends BaseController   {
   @ApiOperation({ summary: '获取字典类型列表' })
   @PreAuthorize('hasPermi("system:dict:list")')
   async list(@Query() dictType: SysDictType) {
-    const [list, total] = await this.dictTypeService.selectDictTypeList(dictType);
+    const [list, total] =
+      await this.dictTypeService.selectDictTypeList(dictType);
     return this.getDataTable(list, total);
   }
 
-  
   @Get('/optionselect')
   @ApiOperation({ summary: '获取字典选择框列表' })
   async optionselect() {
@@ -49,7 +49,6 @@ export class SysDictTypeController extends BaseController   {
     return AjaxResult.success(dictTypes);
   }
 
-  
   @Log({ title: '字典类型', businessType: BusinessType.CLEAN })
   @Delete('/refreshCache')
   @ApiOperation({ summary: '刷新字典缓存' })
@@ -64,7 +63,8 @@ export class SysDictTypeController extends BaseController   {
   @ApiOperation({ summary: '导出字典类型' })
   @PreAuthorize('hasPermi("system:dict:export")')
   async export(@Res() res, @Body() dictType: SysDictType) {
-    const [list, total] = await this.dictTypeService.selectDictTypeList(dictType);
+    const [list, total] =
+      await this.dictTypeService.selectDictTypeList(dictType);
     this.excelUtils.exportExcel(res, list, '字典类型', SysDictType);
   }
 
@@ -102,11 +102,11 @@ export class SysDictTypeController extends BaseController   {
   @Delete('/:dictIds')
   @ApiOperation({ summary: '删除字典类型' })
   @PreAuthorize('hasPermi("system:dict:remove")')
-  async remove(@Param('dictIds',new ParseArrayPipe({ items: Number, separator: ',' })) dictIds: number[]) {
+  async remove(
+    @Param('dictIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    dictIds: number[],
+  ) {
     await this.dictTypeService.deleteDictTypeByIds(dictIds);
     return AjaxResult.success();
   }
-
-
-
 }

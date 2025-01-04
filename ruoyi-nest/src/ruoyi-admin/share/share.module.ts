@@ -4,18 +4,12 @@ import { SysConfigService } from '~/ruoyi-system/sys-config/sys-config.service';
 import { RedisModule } from '~/ruoyi-share/redis/redis.module';
 import { SysConfigModule } from '~/ruoyi-system/sys-config/sys-config.module';
 
-
-const providers = [
-  SysConfigService
-];
+const providers = [SysConfigService];
 
 @Module({
-  imports: [
-    RedisModule,
-    SysConfigModule,
-  ],
+  imports: [RedisModule, SysConfigModule],
   controllers: [SysShareController],
   providers,
-  exports: []
+  exports: [],
 })
 export class ShareModule {}

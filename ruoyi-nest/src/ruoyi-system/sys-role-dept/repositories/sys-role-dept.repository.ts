@@ -10,11 +10,12 @@ export class SysRoleDeptRepository {
     @InjectRepository(SysRoleDept)
     private readonly roleDeptRepository: Repository<SysRoleDept>,
     private readonly dataSource: DataSource,
-    private readonly sqlLoggerUtils: SqlLoggerUtils
+    private readonly sqlLoggerUtils: SqlLoggerUtils,
   ) {}
 
   async deleteRoleDeptByRoleId(roleId: number): Promise<void> {
-    const queryBuilder = this.roleDeptRepository.createQueryBuilder()
+    const queryBuilder = this.roleDeptRepository
+      .createQueryBuilder()
       .delete()
       .where('roleId = :roleId', { roleId });
 
@@ -23,7 +24,8 @@ export class SysRoleDeptRepository {
   }
 
   async selectCountRoleDeptByDeptId(deptId: number): Promise<number> {
-    const queryBuilder = this.roleDeptRepository.createQueryBuilder('rd')
+    const queryBuilder = this.roleDeptRepository
+      .createQueryBuilder('rd')
       .where('rd.deptId = :deptId', { deptId });
 
     this.sqlLoggerUtils.log(queryBuilder, 'selectCountRoleDeptByDeptId');
@@ -31,7 +33,8 @@ export class SysRoleDeptRepository {
   }
 
   async deleteRoleDept(roleIds: number[]): Promise<void> {
-    const queryBuilder = this.roleDeptRepository.createQueryBuilder()
+    const queryBuilder = this.roleDeptRepository
+      .createQueryBuilder()
       .delete()
       .where('roleId IN (:...roleIds)', { roleIds });
 
@@ -40,14 +43,14 @@ export class SysRoleDeptRepository {
   }
 
   async batchRoleDept(roleDepts: SysRoleDept[]): Promise<number> {
-    const queryBuilder = this.dataSource.createQueryBuilder()
+    const queryBuilder = this.dataSource
+      .createQueryBuilder()
       .insert()
       .into(SysRoleDept)
       .values(roleDepts);
 
     this.sqlLoggerUtils.log(queryBuilder, 'batchRoleDept');
     const result = await queryBuilder.execute();
-    return result.identifiers[0].id;  
+    return result.identifiers[0].id;
   }
-
 }

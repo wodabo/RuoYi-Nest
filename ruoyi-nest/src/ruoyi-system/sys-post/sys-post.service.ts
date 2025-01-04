@@ -10,7 +10,7 @@ import { SysUserPostRepository } from '../sys-user-post/repositories/sys-user-po
 export class SysPostService {
   constructor(
     private readonly postRepository: SysPostRepository,
-    private readonly userPostRepository: SysUserPostRepository  
+    private readonly userPostRepository: SysUserPostRepository,
   ) {}
 
   /**
@@ -22,7 +22,7 @@ export class SysPostService {
 
   /**
    * 查询所有岗位
-   * 
+   *
    * @returns 岗位列表
    */
   async selectPostAll(): Promise<SysPost[]> {
@@ -31,7 +31,7 @@ export class SysPostService {
 
   /**
    * 通过岗位ID查询岗位信息
-   * 
+   *
    * @param postId 岗位ID
    * @return 角色对象信息
    */
@@ -41,7 +41,7 @@ export class SysPostService {
 
   /**
    * 根据用户ID获取岗位选择框列表
-   * 
+   *
    * @param userId 用户ID
    * @return 选中岗位ID列表
    */
@@ -51,7 +51,7 @@ export class SysPostService {
 
   /**
    * 校验岗位名称是否唯一
-   * 
+   *
    * @param post 岗位信息
    * @return 结果
    */
@@ -66,7 +66,7 @@ export class SysPostService {
 
   /**
    * 校验岗位编码是否唯一
-   * 
+   *
    * @param post 岗位信息
    * @return 结果
    */
@@ -81,7 +81,7 @@ export class SysPostService {
 
   /**
    * 通过岗位ID查询岗位使用数量
-   * 
+   *
    * @param postId 岗位ID
    * @return 结果
    */
@@ -91,7 +91,7 @@ export class SysPostService {
 
   /**
    * 删除岗位信息
-   * 
+   *
    * @param postId 岗位ID
    * @return 结果
    */
@@ -101,14 +101,14 @@ export class SysPostService {
 
   /**
    * 批量删除岗位信息
-   * 
+   *
    * @param postIds 需要删除的岗位ID
    * @return 结果
    */
   async deletePostByIds(postIds: number[]): Promise<number> {
     for (const postId of postIds) {
       const post = await this.selectPostById(postId);
-      if (await this.countUserPostById(postId) > 0) {
+      if ((await this.countUserPostById(postId)) > 0) {
         throw new ServiceException(`${post.postName}已分配,不能删除`);
       }
     }
@@ -117,7 +117,7 @@ export class SysPostService {
 
   /**
    * 新增保存岗位信息
-   * 
+   *
    * @param post 岗位信息
    * @return 结果
    */
@@ -127,7 +127,7 @@ export class SysPostService {
 
   /**
    * 修改保存岗位信息
-   * 
+   *
    * @param post 岗位信息
    * @return 结果
    */

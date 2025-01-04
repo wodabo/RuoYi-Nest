@@ -1,12 +1,33 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, Request, UseGuards, UseInterceptors, ParseIntPipe, DefaultValuePipe, ParseArrayPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Res,
+  Request,
+  UseGuards,
+  UseInterceptors,
+  ParseIntPipe,
+  DefaultValuePipe,
+  ParseArrayPipe,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  PartialType,
+} from '@nestjs/swagger';
 import { SysConfigService } from '~/ruoyi-system/sys-config/sys-config.service';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { SysConfig } from '~/ruoyi-system/sys-config/entities/sys-config.entity';
 import { AjaxResult } from '~/ruoyi-share/response/ajax-result';
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
 import { ExcelUtils } from '~/ruoyi-share/utils/excel.utils';
-import { FileUploadUtils } from '~/ruoyi-share/utils/file-upload.utils';  
+import { FileUploadUtils } from '~/ruoyi-share/utils/file-upload.utils';
 import { MimeTypeUtils } from '~/ruoyi-share/utils/mime-type.utils';
 import { RuoYiConfigService } from '~/ruoyi-share/config/ruoyi-config.service';
 import { JwtAuthService } from '~/ruoyi-framework/auth/jwt/jwt-auth-service';
@@ -14,7 +35,6 @@ import { SecurityUtils } from '~/ruoyi-share/utils/security.utils';
 import { PreAuthorize } from '~/ruoyi-share/annotation/PreAuthorize';
 import { Log } from '~/ruoyi-share/annotation/Log';
 import { BusinessType } from '~/ruoyi-share/enums/BusinessType';
-
 
 @ApiTags('参数配置')
 @Controller('system/config')
@@ -78,7 +98,7 @@ export class SysConfigController extends BaseController {
   @Log({ title: '参数管理', businessType: BusinessType.INSERT })
   @Post()
   async add(@Body() config: SysConfig, @Request() req) {
-    if (!await this.configService.checkConfigKeyUnique(config)) {
+    if (!(await this.configService.checkConfigKeyUnique(config))) {
       return this.error(`新增参数'${config.configName}'失败，参数键名已存在`);
     }
     config.createBy = req.user.username;
@@ -91,11 +111,14 @@ export class SysConfigController extends BaseController {
   @Log({ title: '参数管理', businessType: BusinessType.UPDATE })
   @Put()
   async edit(@Body() config: SysConfig, @Request() req) {
-    if (!await this.configService.checkConfigKeyUnique(config)) {
+    if (!(await this.configService.checkConfigKeyUnique(config))) {
       return this.error(`修改参数'${config.configName}'失败，参数键名已存在`);
     }
     config.updateBy = req.user.username;
-    const result = await this.configService.updateConfig(config.configId, config);
+    const result = await this.configService.updateConfig(
+      config.configId,
+      config,
+    );
     return this.toAjax(result);
   }
 
@@ -103,10 +126,11 @@ export class SysConfigController extends BaseController {
   @PreAuthorize('hasPermi("system:config:remove")')
   @Log({ title: '参数管理', businessType: BusinessType.DELETE })
   @Delete(':configIds')
-  async remove(@Param('configIds',new ParseArrayPipe({ items: Number, separator: ',' })) configIds: number[]) {
+  async remove(
+    @Param('configIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    configIds: number[],
+  ) {
     await this.configService.deleteConfigByIds(configIds);
     return this.success();
   }
-
-
 }

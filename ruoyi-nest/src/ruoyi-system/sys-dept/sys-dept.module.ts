@@ -14,12 +14,17 @@ import { SysUserPostModule } from '~/ruoyi-system/sys-user-post/sys-user-post.mo
 import { SysPostModule } from '~/ruoyi-system/sys-post/sys-post.module';
 import { SysConfigModule } from '~/ruoyi-system/sys-config/sys-config.module';
 
-const providers = [SysDeptService, SysDeptRepository,SysUserService, SysUserRepository];
+const providers = [
+  SysDeptService,
+  SysDeptRepository,
+  SysUserService,
+  SysUserRepository,
+];
 
 @Module({
   imports: [
     SysRoleDeptModule,
-    TypeOrmModule.forFeature([SysDept,SysUser]),
+    TypeOrmModule.forFeature([SysDept, SysUser]),
     SysRoleModule,
     SysUserRoleModule,
     SysUserPostModule,
@@ -28,6 +33,6 @@ const providers = [SysDeptService, SysDeptRepository,SysUserService, SysUserRepo
   ],
   controllers: [],
   providers,
-  exports: [SysDeptService]
+  exports: [SysDeptService],
 })
 export class SysDeptModule {}

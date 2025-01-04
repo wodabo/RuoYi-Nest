@@ -3,6 +3,6 @@ import { SysJobModule } from './sys-job/sys-job.module';
 import { SysJobLogModule } from './sys-job-log/sys-job-log.module';
 
 @Module({
-  imports: [SysJobModule, SysJobLogModule]
+  imports: [SysJobModule, SysJobLogModule],
 })
 export class RuoYiQuartzModule {}

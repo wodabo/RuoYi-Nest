@@ -12,10 +12,10 @@ const providers = [SysPostService, SysPostRepository];
   imports: [
     RuoYiShareModule,
     TypeOrmModule.forFeature([SysPost]),
-    SysUserPostModule
+    SysUserPostModule,
   ],
   controllers: [],
   providers,
-  exports: [SysPostService,SysPostRepository]
+  exports: [SysPostService, SysPostRepository],
 })
 export class SysPostModule {}

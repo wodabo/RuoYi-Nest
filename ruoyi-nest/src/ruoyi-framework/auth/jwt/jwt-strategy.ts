@@ -1,6 +1,11 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException,ExecutionContext, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ExecutionContext,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SysUser } from '~/ruoyi-system/sys-user/entities/sys-user.entity';
@@ -15,33 +20,30 @@ import { REQUEST } from '@nestjs/core';
 import { TokenConfigService } from '~/ruoyi-share/config/token-config.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    private readonly logger = new Logger(JwtStrategy.name);
-    constructor(
-        private readonly jwtAuthService: JwtAuthService,
-        tokenConfigService: TokenConfigService 
-    ) {
-        const secret = tokenConfigService.getSecret(); // 先获取配置
-        super(
-            {
-                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-                ignoreExpiration: false,
-                secretOrKey: secret, 
-                passReqToCallback: true  // 启用请求传递
-            }
-        );
+  private readonly logger = new Logger(JwtStrategy.name);
+  constructor(
+    private readonly jwtAuthService: JwtAuthService,
+    tokenConfigService: TokenConfigService,
+  ) {
+    const secret = tokenConfigService.getSecret(); // 先获取配置
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: secret,
+      passReqToCallback: true, // 启用请求传递
+    });
+  }
+
+  async validate(request: Request, payload: any) {
+    try {
+      const user = await this.jwtAuthService.validateUser(
+        payload.sub,
+        payload.username,
+        request,
+      );
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException();
     }
-
-    
-    async validate(request: Request, payload: any) {
-        try{
-            const user = await this.jwtAuthService.validateUser(payload.sub,payload.username,request);
-            return user;
-        }catch(error){
-            throw new UnauthorizedException();
-        }
-    }
-
-
- 
-
+  }
 }

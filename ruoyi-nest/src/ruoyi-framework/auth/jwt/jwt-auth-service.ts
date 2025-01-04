@@ -1,4 +1,10 @@
-import { ExecutionContext, Injectable, Logger, UnauthorizedException, Request } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  Request,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SysUser } from '~/ruoyi-system/sys-user/entities/sys-user.entity';
 import { LoginUser } from '~/ruoyi-share/model/login-user';
@@ -18,11 +24,10 @@ import { RedisCacheService } from '~/ruoyi-share/redis/redis-cache.service';
 import { UserStatus } from '~/ruoyi-share/enums/UserStatus';
 import { TokenConfigService } from '~/ruoyi-share/config/token-config.service';
 import { ShareUtils } from '~/ruoyi-share/utils/share.utils';
-import { LogUtils } from '~/ruoyi-share/utils/log.utils'
+import { LogUtils } from '~/ruoyi-share/utils/log.utils';
 import { Constants } from '~/ruoyi-share/constant/Constants';
 import { SecurityUtils } from '~/ruoyi-share/utils/security.utils';
 import { ContextHolderUtils } from '~/ruoyi-share/utils/context-holder.utils';
-
 
 @Injectable()
 export class JwtAuthService {
@@ -37,8 +42,8 @@ export class JwtAuthService {
     private readonly tokenConfigService: TokenConfigService,
     private readonly shareUtils: ShareUtils,
     private readonly logUtils: LogUtils,
-    private readonly contextHolderUtils: ContextHolderUtils
-  ) { }
+    private readonly contextHolderUtils: ContextHolderUtils,
+  ) {}
 
   async createToken(loginUser: LoginUser, request: Request) {
     const sysUser = loginUser.user;
@@ -46,7 +51,7 @@ export class JwtAuthService {
 
     const payload = {
       sub: loginUser.userId,
-      username: loginUser.getUsername()
+      username: loginUser.getUsername(),
     };
     const token = this.jwtService.sign(payload, {
       secret: this.tokenConfigService.getSecret(),
@@ -55,7 +60,7 @@ export class JwtAuthService {
 
     loginUser.token = token;
 
-    // 权限集合  
+    // 权限集合
     const permissions = await this.permissionService.getMenuPermission(sysUser);
 
     loginUser.permissions = permissions;
@@ -83,11 +88,16 @@ export class JwtAuthService {
    */
   refreshToken(loginUser: LoginUser) {
     loginUser.loginTime = Date.now();
-    loginUser.expireTime = loginUser.loginTime + this.tokenConfigService.getExpireTime() // Convert minutes to milliseconds
+    loginUser.expireTime =
+      loginUser.loginTime + this.tokenConfigService.getExpireTime(); // Convert minutes to milliseconds
 
     // Cache loginUser by token
     const userKey = this.getTokenKey(loginUser.token);
-    this.redisCacheService.setCacheObjectWithTimeout(userKey, loginUser, this.tokenConfigService.getExpireTime());
+    this.redisCacheService.setCacheObjectWithTimeout(
+      userKey,
+      loginUser,
+      this.tokenConfigService.getExpireTime(),
+    );
   }
 
   /**
@@ -104,21 +114,22 @@ export class JwtAuthService {
    * @param userAgent User-Agent header value
    */
   async setUserAgent(loginUser: LoginUser, request: Request) {
-    const userAgent = request.headers['user-agent']
+    const userAgent = request.headers['user-agent'];
     const browserInfo = this.shareUtils.parseBrowser(userAgent);
     const osInfo = this.shareUtils.parseOS(userAgent);
     loginUser.ipaddr = this.ipUtils.getIpAddr(request);
-    loginUser.loginLocation = await this.addressUtils.getLocation(loginUser.ipaddr);
+    loginUser.loginLocation = await this.addressUtils.getLocation(
+      loginUser.ipaddr,
+    );
     loginUser.browser = browserInfo;
     loginUser.os = osInfo;
   }
 
-
   /**
- * 获取登录用户信息
- * @param request HTTP请求对象
- * @returns 登录用户信息
- */
+   * 获取登录用户信息
+   * @param request HTTP请求对象
+   * @returns 登录用户信息
+   */
   async getLoginUser(request: Request): Promise<LoginUser | null> {
     // 从请求中获取token
     const token = this.extractTokenFromHeader(request);
@@ -128,7 +139,8 @@ export class JwtAuthService {
     try {
       // 从Redis中获取用户信息
       const tokenKey = this.getTokenKey(token);
-      const loginUser: LoginUser = await this.redisCacheService.getCacheObject(tokenKey);
+      const loginUser: LoginUser =
+        await this.redisCacheService.getCacheObject(tokenKey);
       if (loginUser) {
         return new LoginUser(loginUser);
       }
@@ -152,24 +164,29 @@ export class JwtAuthService {
     return type === 'Bearer' ? token : undefined;
   }
 
-  async validateUser(userId: number, username: string, request: Request): Promise<LoginUser> {
-
+  async validateUser(
+    userId: number,
+    username: string,
+    request: Request,
+  ): Promise<LoginUser> {
     const loginUser: LoginUser = await this.getLoginUser(request);
-
 
     if (!loginUser) {
       this.logger.warn(`登录用户：${username} 不存在.`);
-      throw new ServiceException(MessageUtils.message('user.not.exists', { username }));
-    }
-    else if (loginUser.user.delFlag === UserStatus.DELETED.getCode()) {
+      throw new ServiceException(
+        MessageUtils.message('user.not.exists', { username }),
+      );
+    } else if (loginUser.user.delFlag === UserStatus.DELETED.getCode()) {
       this.logger.warn(`登录用户：${username} 已被删除.`);
-      throw new ServiceException(MessageUtils.message('user.password.delete', { username }));
-    }
-    else if (loginUser.user.status === UserStatus.DISABLE.getCode()) {
+      throw new ServiceException(
+        MessageUtils.message('user.password.delete', { username }),
+      );
+    } else if (loginUser.user.status === UserStatus.DISABLE.getCode()) {
       this.logger.warn(`登录用户：${username} 已被停用.`);
-      throw new ServiceException(MessageUtils.message('user.blocked', { username }));
+      throw new ServiceException(
+        MessageUtils.message('user.blocked', { username }),
+      );
     }
-
 
     return loginUser;
   }
@@ -184,26 +201,26 @@ export class JwtAuthService {
     }
   }
 
-
   /**
- * 退出登录
- */
+   * 退出登录
+   */
   async logout(request: Request): Promise<void> {
     if (!request) {
       throw new UnauthorizedException('未登录');
     }
 
-
     const loginUser: LoginUser = await this.getLoginUser(request);
     if (loginUser) {
-      const userName = loginUser.getUsername()
+      const userName = loginUser.getUsername();
       // 从 Redis 中删除 token
       await this.delLoginUser(loginUser.token);
 
       // 记录用户退出日志
-      this.logUtils.recordLogininfor(userName, Constants.LOGOUT, MessageUtils.message("user.logout.success"));
+      this.logUtils.recordLogininfor(
+        userName,
+        Constants.LOGOUT,
+        MessageUtils.message('user.logout.success'),
+      );
     }
-
-
   }
 }

@@ -31,11 +31,7 @@ import { SysUserPostModule } from '~/ruoyi-system/sys-user-post/sys-user-post.mo
 import { SysUserRoleModule } from '~/ruoyi-system/sys-user-role/sys-user-role.module';
 import { SysRoleMenuModule } from '~/ruoyi-system/sys-role-menu/sys-role-menu.module';
 
-
-const providers = [
-    SysLoginService,
-    SysRegisterService,
-];
+const providers = [SysLoginService, SysRegisterService];
 
 @Module({
   imports: [
@@ -71,6 +67,6 @@ const providers = [
     SysIndexController,
   ],
   providers,
-  exports: []
+  exports: [],
 })
 export class SystemModule {}

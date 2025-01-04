@@ -5,25 +5,19 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Excel, ColumnType } from '~/ruoyi-share/annotation/Excel';
 
 export class SysUserOnline {
+  tokenId?: string;
 
-    tokenId?: string;
+  deptName?: string;
 
-   
-    deptName?: string;
+  userName?: string;
 
-    userName?: string;
+  ipaddr?: string;
 
-    ipaddr?: string;
+  loginLocation?: string;
 
-    loginLocation?: string;
+  browser?: string;
 
-    browser?: string;
+  os?: string;
 
-
-    os?: string;
-
-  
-    loginTime?: number;
-
-   
+  loginTime?: number;
 }

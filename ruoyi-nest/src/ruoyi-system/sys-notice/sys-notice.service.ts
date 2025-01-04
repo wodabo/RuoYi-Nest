@@ -4,19 +4,17 @@ import { SysNotice } from './entities/sys-notice.entity';
 
 @Injectable()
 export class SysNoticeService {
-  constructor(
-    private readonly noticeRepository: SysNoticeRepository,
-  ) {}
+  constructor(private readonly noticeRepository: SysNoticeRepository) {}
 
   async selectNoticeById(noticeId: number): Promise<SysNotice> {
     return this.noticeRepository.selectNoticeById(noticeId);
   }
 
-  async selectNoticeList(query: SysNotice): Promise<[SysNotice[], number]> {  
+  async selectNoticeList(query: SysNotice): Promise<[SysNotice[], number]> {
     return this.noticeRepository.selectNoticeList(query);
   }
 
-  async insertNotice(notice: SysNotice): Promise<SysNotice> {  
+  async insertNotice(notice: SysNotice): Promise<SysNotice> {
     return this.noticeRepository.insertNotice(notice);
   }
 

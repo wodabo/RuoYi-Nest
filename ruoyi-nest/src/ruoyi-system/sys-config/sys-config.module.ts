@@ -8,12 +8,9 @@ import { RedisModule } from '~/ruoyi-share/redis/redis.module';
 const providers = [SysConfigService, SysConfigRepository];
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SysConfig]),
-    RedisModule
-  ],
+  imports: [TypeOrmModule.forFeature([SysConfig]), RedisModule],
   controllers: [],
   providers,
-  exports: [SysConfigService,SysConfigRepository]
+  exports: [SysConfigService, SysConfigRepository],
 })
 export class SysConfigModule {}

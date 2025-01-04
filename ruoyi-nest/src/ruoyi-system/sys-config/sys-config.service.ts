@@ -19,7 +19,9 @@ export class SysConfigService {
   }
 
   async selectConfigByKey(configKey: string): Promise<string> {
-    const configValue = await this.redisCacheService.getCacheObject(this.getCacheKey(configKey));
+    const configValue = await this.redisCacheService.getCacheObject(
+      this.getCacheKey(configKey),
+    );
     if (configValue) {
       return configValue as string;
     }
@@ -27,7 +29,10 @@ export class SysConfigService {
     config.configKey = configKey;
     const retConfig = await this.configRepository.selectConfig(config);
     if (retConfig) {
-      await this.redisCacheService.setCacheObject(this.getCacheKey(configKey), retConfig.configValue);
+      await this.redisCacheService.setCacheObject(
+        this.getCacheKey(configKey),
+        retConfig.configValue,
+      );
       return retConfig.configValue;
     }
     return '';
@@ -35,11 +40,13 @@ export class SysConfigService {
 
   /**
    * 获取验证码开关
-   * 
+   *
    * @returns true开启，false关闭
    */
   async selectCaptchaEnabled(): Promise<boolean> {
-    const captchaEnabled = await this.selectConfigByKey('sys.account.captchaEnabled');
+    const captchaEnabled = await this.selectConfigByKey(
+      'sys.account.captchaEnabled',
+    );
     return captchaEnabled.toLowerCase() === 'true';
   }
 
@@ -50,7 +57,10 @@ export class SysConfigService {
   async insertConfig(config: SysConfig): Promise<number> {
     const row = await this.configRepository.insertConfig(config);
     if (row > 0) {
-      await this.redisCacheService.setCacheObject(this.getCacheKey(config.configKey), config.configValue);
+      await this.redisCacheService.setCacheObject(
+        this.getCacheKey(config.configKey),
+        config.configValue,
+      );
     }
     return row;
   }
@@ -58,12 +68,17 @@ export class SysConfigService {
   async updateConfig(configId: number, config: SysConfig): Promise<boolean> {
     const temp = await this.selectConfigById(configId);
     if (temp.configKey !== config.configKey) {
-      await this.redisCacheService.deleteObject(this.getCacheKey(temp.configKey));
+      await this.redisCacheService.deleteObject(
+        this.getCacheKey(temp.configKey),
+      );
     }
 
     const row = await this.configRepository.updateConfig(configId, config);
     if (row > 0) {
-      await this.redisCacheService.setCacheObject(this.getCacheKey(config.configKey), config.configValue);
+      await this.redisCacheService.setCacheObject(
+        this.getCacheKey(config.configKey),
+        config.configValue,
+      );
     }
     return row > 0;
   }
@@ -75,37 +90,47 @@ export class SysConfigService {
         throw new ServiceException(`内置参数【${config.configKey}】不能删除`);
       }
       await this.configRepository.deleteConfigById(configId);
-      await this.redisCacheService.deleteObject(this.getCacheKey(config.configKey));
+      await this.redisCacheService.deleteObject(
+        this.getCacheKey(config.configKey),
+      );
     }
   }
 
   async checkConfigKeyUnique(config: SysConfig): Promise<boolean> {
     const configId = config.configId ? config.configId : -1;
-    const info = await this.configRepository.checkConfigKeyUnique(config.configKey);
+    const info = await this.configRepository.checkConfigKeyUnique(
+      config.configKey,
+    );
     if (info && info.configId !== configId) {
       return false;
     }
     return true;
   }
 
-   /**
-     * 加载参数缓存数据
-     */
-   async loadingConfigCache(): Promise<void> {
-       const [configsList, total] = await this.configRepository.selectConfigList(new SysConfig());
-       for (const config of configsList) {
-           await this.redisCacheService.setCacheObject(this.getCacheKey(config.configKey), config.configValue);
-       }
-   }
+  /**
+   * 加载参数缓存数据
+   */
+  async loadingConfigCache(): Promise<void> {
+    const [configsList, total] = await this.configRepository.selectConfigList(
+      new SysConfig(),
+    );
+    for (const config of configsList) {
+      await this.redisCacheService.setCacheObject(
+        this.getCacheKey(config.configKey),
+        config.configValue,
+      );
+    }
+  }
 
-   /**
-    * 清空参数缓存数据
-    */
-   async clearConfigCache(): Promise<void> {
-       const keys = await this.redisCacheService.keys(CacheConstants.SYS_CONFIG_KEY + "*");
-       await this.redisCacheService.deleteObjects(keys);
-   }
-
+  /**
+   * 清空参数缓存数据
+   */
+  async clearConfigCache(): Promise<void> {
+    const keys = await this.redisCacheService.keys(
+      CacheConstants.SYS_CONFIG_KEY + '*',
+    );
+    await this.redisCacheService.deleteObjects(keys);
+  }
 
   async resetConfigCache(): Promise<void> {
     await this.clearConfigCache();

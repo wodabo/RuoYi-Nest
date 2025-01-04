@@ -7,12 +7,9 @@ import { SysUserPostRepository } from './repositories/sys-user-post.repository';
 const providers = [SysUserPostRepository];
 
 @Module({
-  imports: [
-    RuoYiShareModule,
-    TypeOrmModule.forFeature([SysUserPost])
-  ],
+  imports: [RuoYiShareModule, TypeOrmModule.forFeature([SysUserPost])],
   controllers: [],
   providers,
-  exports: [SysUserPostRepository]
+  exports: [SysUserPostRepository],
 })
 export class SysUserPostModule {}

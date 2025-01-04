@@ -1,6 +1,6 @@
-import { 
-  Controller, 
-  Get, 
+import {
+  Controller,
+  Get,
   Post,
   Put,
   Delete,
@@ -16,7 +16,12 @@ import {
   Query,
   ParseArrayPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  PartialType,
+} from '@nestjs/swagger';
 import { SysDictDataService } from '~/ruoyi-system/sys-dict-data/sys-dict-data.service';
 import { SysDictTypeService } from '~/ruoyi-system/sys-dict-type/sys-dict-type.service';
 import { AjaxResult } from '~/ruoyi-share/response/ajax-result';
@@ -33,7 +38,7 @@ import { BaseController } from '~/ruoyi-share/controller/base-controller';
 
 @ApiTags('数据字典信息')
 @Controller('/system/dict/data')
-export class SysDictDataController  extends BaseController {
+export class SysDictDataController extends BaseController {
   constructor(
     private readonly dictDataService: SysDictDataService,
     private readonly dictTypeService: SysDictTypeService,
@@ -50,7 +55,8 @@ export class SysDictDataController  extends BaseController {
   @PreAuthorize('hasPermi("system:dict:list")')
   async list(@Query() dictData: SysDictData, @Request() req) {
     this.startPage(dictData);
-    const [list, total] = await this.dictDataService.selectDictDataList(dictData);
+    const [list, total] =
+      await this.dictDataService.selectDictDataList(dictData);
     return this.getDataTable(list, total);
   }
 
@@ -105,7 +111,11 @@ export class SysDictDataController  extends BaseController {
   @ApiOperation({ summary: '删除字典类型' })
   @Log({ title: '字典类型', businessType: BusinessType.DELETE })
   @PreAuthorize('hasPermi("system:dict:remove")')
-  async remove(@Param('dictCodes',new ParseArrayPipe({ items: Number, separator: ',' })) dictCodes: number[], @Request() req) {
+  async remove(
+    @Param('dictCodes', new ParseArrayPipe({ items: Number, separator: ',' }))
+    dictCodes: number[],
+    @Request() req,
+  ) {
     await this.dictDataService.deleteDictDataByIds(dictCodes);
     return AjaxResult.success();
   }

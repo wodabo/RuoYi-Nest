@@ -1,10 +1,10 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Put, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
   Delete,
   Query,
   ParseIntPipe,
@@ -16,16 +16,21 @@ import {
   UseInterceptors,
   Request,
   ValidationPipe,
-  ParseArrayPipe
+  ParseArrayPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, PartialType } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  PartialType,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SysUserService } from '~/ruoyi-system/sys-user/sys-user.service';
 
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
 import { SysDeptService } from '~/ruoyi-system/sys-dept/sys-dept.service';
-import { AjaxResult } from '~/ruoyi-share/response/ajax-result'; 
+import { AjaxResult } from '~/ruoyi-share/response/ajax-result';
 import { PreAuthorize } from '~/ruoyi-share/annotation/PreAuthorize';
 import { SysPostService } from '~/ruoyi-system/sys-post/sys-post.service';
 import { SysRoleService } from '~/ruoyi-system/sys-role/sys-role.service';
@@ -40,7 +45,6 @@ import { RuoYiConfigService } from '~/ruoyi-share/config/ruoyi-config.service';
 import { ExcelUtils } from '~/ruoyi-share/utils/excel.utils';
 import { SysDept } from '~/ruoyi-system/sys-dept/entities/sys-dept.entity';
 
-
 @ApiTags('用户管理')
 @Controller('system/user')
 export class SysUserController extends BaseController {
@@ -50,10 +54,10 @@ export class SysUserController extends BaseController {
     private readonly postService: SysPostService,
     private readonly roleService: SysRoleService,
     private readonly securityUtils: SecurityUtils,
-    private readonly jwtAuthService: JwtAuthService,  
+    private readonly jwtAuthService: JwtAuthService,
     private readonly fileUploadUtils: FileUploadUtils,
     private readonly mimeTypeUtils: MimeTypeUtils,
-    private readonly ruoyiConfigService: RuoYiConfigService,  
+    private readonly ruoyiConfigService: RuoYiConfigService,
     private readonly excelUtils: ExcelUtils,
   ) {
     super();
@@ -62,11 +66,11 @@ export class SysUserController extends BaseController {
   @PreAuthorize('hasPermi("system:user:list")')
   @Get('list')
   @ApiOperation({ summary: '获取用户列表' })
-  async list(@Query() query: SysUser,@Request() req): Promise<TableDataInfo> {
-    this.startPage(query)
+  async list(@Query() query: SysUser, @Request() req): Promise<TableDataInfo> {
+    this.startPage(query);
     const loginUser = req.user;
     const [list, total] = await this.userService.selectUserList(query);
-    return this.getDataTable(list, total)
+    return this.getDataTable(list, total);
   }
 
   @PreAuthorize('hasPermi("system:user:export")')
@@ -76,7 +80,7 @@ export class SysUserController extends BaseController {
   async export(@Res() res, @Body() user: SysUser, @Request() req) {
     const loginUser = req.user;
     const [list] = await this.userService.selectUserList(user);
-    await this.excelUtils.exportExcel(res, list, '用户数据',SysUser);
+    await this.excelUtils.exportExcel(res, list, '用户数据', SysUser);
   }
 
   @PreAuthorize('hasPermi("system:user:import")')
@@ -84,17 +88,25 @@ export class SysUserController extends BaseController {
   @ApiOperation({ summary: '导入用户数据' })
   @UseInterceptors(FileInterceptor('file'))
   @Log({ title: '用户管理', businessType: BusinessType.IMPORT })
-  async importData(@UploadedFile() file, @Body('updateSupport') updateSupport: boolean, @Request() req) {
+  async importData(
+    @UploadedFile() file,
+    @Body('updateSupport') updateSupport: boolean,
+    @Request() req,
+  ) {
     const loginUser = req.user;
     const userList = await this.excelUtils.importExcel(file.buffer, SysUser);
-    const message = await this.userService.importUser(userList, updateSupport, loginUser.getUsername());
+    const message = await this.userService.importUser(
+      userList,
+      updateSupport,
+      loginUser.getUsername(),
+    );
     return AjaxResult.success(message);
   }
 
   @Post('importTemplate')
   @ApiOperation({ summary: '下载导入模板' })
   async importTemplate(@Res() res) {
-    await this.excelUtils.importTemplateExcel(res,'用户数据',SysUser);
+    await this.excelUtils.importTemplateExcel(res, '用户数据', SysUser);
   }
 
   @Get('profile')
@@ -102,9 +114,13 @@ export class SysUserController extends BaseController {
   async profile(@Request() req) {
     const loginUser = req.user;
     const user = loginUser.user;
-    const ajax:any = AjaxResult.success(user);
-    ajax.postGroup = await this.userService.selectUserPostGroup(loginUser.getUsername());
-    ajax.roleGroup = await this.userService.selectUserRoleGroup(loginUser.getUsername());
+    const ajax: any = AjaxResult.success(user);
+    ajax.postGroup = await this.userService.selectUserPostGroup(
+      loginUser.getUsername(),
+    );
+    ajax.roleGroup = await this.userService.selectUserRoleGroup(
+      loginUser.getUsername(),
+    );
     return ajax;
   }
 
@@ -119,11 +135,18 @@ export class SysUserController extends BaseController {
     currentUser.phonenumber = user.phonenumber;
     currentUser.sex = user.sex;
 
-    if (user.phonenumber && !await this.userService.checkPhoneUnique(currentUser)) {
-      return AjaxResult.error(`修改用户'${loginUser.username}'失败，手机号码已存在`);
+    if (
+      user.phonenumber &&
+      !(await this.userService.checkPhoneUnique(currentUser))
+    ) {
+      return AjaxResult.error(
+        `修改用户'${loginUser.username}'失败，手机号码已存在`,
+      );
     }
-    if (user.email && !await this.userService.checkEmailUnique(currentUser)) {
-      return AjaxResult.error(`修改用户'${loginUser.username}'失败，邮箱账号已存在`);
+    if (user.email && !(await this.userService.checkEmailUnique(currentUser))) {
+      return AjaxResult.error(
+        `修改用户'${loginUser.username}'失败，邮箱账号已存在`,
+      );
     }
 
     const result = await this.userService.updateUserProfile(currentUser);
@@ -138,21 +161,29 @@ export class SysUserController extends BaseController {
   @Put('profile/updatePwd')
   @ApiOperation({ summary: '重置密码' })
   @Log({ title: '个人信息', businessType: BusinessType.UPDATE })
-  async updatePwd(@Query('oldPassword') oldPassword: string, @Query('newPassword') newPassword: string, @Request() req) {
+  async updatePwd(
+    @Query('oldPassword') oldPassword: string,
+    @Query('newPassword') newPassword: string,
+    @Request() req,
+  ) {
     const loginUser = req.user;
     const currentUser = loginUser.user;
     const userName = loginUser.getUsername();
     const password = loginUser.getPassword();
 
-    if (!await this.securityUtils.matchesPassword(oldPassword, password)) {
+    if (!(await this.securityUtils.matchesPassword(oldPassword, password))) {
       return AjaxResult.error('修改密码失败，旧密码错误');
     }
     if (await this.securityUtils.matchesPassword(newPassword, password)) {
       return AjaxResult.error('新密码不能与旧密码相同');
     }
 
-    const encryptedPassword = await this.securityUtils.encryptPassword(newPassword);
-    const result = await this.userService.resetUserPwd(userName, encryptedPassword);
+    const encryptedPassword =
+      await this.securityUtils.encryptPassword(newPassword);
+    const result = await this.userService.resetUserPwd(
+      userName,
+      encryptedPassword,
+    );
     if (result > 0) {
       // 更新缓存用户密码
       currentUser.password = encryptedPassword;
@@ -169,8 +200,14 @@ export class SysUserController extends BaseController {
   async avatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
     if (file) {
       const loginUser = req.user;
-      const avatar = await this.fileUploadUtils.uploadWithExtension(this.ruoyiConfigService.getAvatarPath(), file, this.mimeTypeUtils.IMAGE_EXTENSION);
-      if (await this.userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
+      const avatar = await this.fileUploadUtils.uploadWithExtension(
+        this.ruoyiConfigService.getAvatarPath(),
+        file,
+        this.mimeTypeUtils.IMAGE_EXTENSION,
+      );
+      if (
+        await this.userService.updateUserAvatar(loginUser.getUsername(), avatar)
+      ) {
         const ajax = AjaxResult.success();
         ajax.imgUrl = avatar;
         // 更新缓存用户头像
@@ -181,58 +218,59 @@ export class SysUserController extends BaseController {
     }
     return AjaxResult.error('上传图片异常，请联系管理员');
   }
-  
+
   @PreAuthorize('hasPermi("system:user:list")')
   @Get('deptTree')
   @ApiOperation({ summary: '获取部门树列表' })
-  async deptTree(@Query() dept: SysDept,@Request() req) {      
-    
+  async deptTree(@Query() dept: SysDept, @Request() req) {
     const loginUser = req.user;
 
-
-    return AjaxResult.success(await this.deptService.selectDeptTreeList(dept));  
+    return AjaxResult.success(await this.deptService.selectDeptTreeList(dept));
   }
 
-    // nestjs 匹配参数路由更为宽松，所以deptTree要放在这个方法上面，否则会导致deptTree方法匹配不到
+  // nestjs 匹配参数路由更为宽松，所以deptTree要放在这个方法上面，否则会导致deptTree方法匹配不到
   @PreAuthorize("hasPermi('system:user:query')")
-  @Get(['//',':userId'])
+  @Get(['//', ':userId'])
   @ApiOperation({ summary: '根据用户编号获取详细信息' })
-  async getInfo(@Param('userId', new DefaultValuePipe(0), ParseIntPipe) userId: number, @Request() req) {
+  async getInfo(
+    @Param('userId', new DefaultValuePipe(0), ParseIntPipe) userId: number,
+    @Request() req,
+  ) {
     const loginUser = req.user;
-    const ajax:any = new AjaxResult();
+    const ajax: any = new AjaxResult();
     if (userId) {
-      await this.userService.checkUserDataScope(userId,loginUser);
+      await this.userService.checkUserDataScope(userId, loginUser);
       const sysUser = await this.userService.selectUserById(userId);
       ajax.data = sysUser;
       ajax.postIds = await this.postService.selectPostListByUserId(userId);
-      ajax.roleIds = sysUser.roles.map(role => role.roleId);
+      ajax.roleIds = sysUser.roles.map((role) => role.roleId);
     }
     const roles = await this.roleService.selectRoleAll();
-    ajax.roles =  this.securityUtils.isAdmin(userId) ? roles : roles.filter(r => !this.securityUtils.isAdmin(r.roleId));
+    ajax.roles = this.securityUtils.isAdmin(userId)
+      ? roles
+      : roles.filter((r) => !this.securityUtils.isAdmin(r.roleId));
     ajax.posts = await this.postService.selectPostAll();
     return ajax;
   }
-
-
 
   @PreAuthorize("hasPermi('system:user:add')")
   @Post()
   @ApiOperation({ summary: '新增用户' })
   @Log({ title: '用户管理', businessType: BusinessType.INSERT })
-  async add(@Body() user: SysUser,@Request() req) {
+  async add(@Body() user: SysUser, @Request() req) {
     const loginUser = req.user;
     await this.deptService.checkDeptDataScope(user.deptId);
     await this.roleService.checkRoleDataScope(user.roleIds);
-    if (!await this.userService.checkUserNameUnique(user)) {
+    if (!(await this.userService.checkUserNameUnique(user))) {
       return AjaxResult.error(`新增用户'${user.userName}'失败，登录账号已存在`);
     }
-    if (user.phonenumber && !await this.userService.checkPhoneUnique(user)) {
+    if (user.phonenumber && !(await this.userService.checkPhoneUnique(user))) {
       return AjaxResult.error(`新增用户'${user.userName}'失败，手机号码已存在`);
     }
-    if (user.email && !await this.userService.checkEmailUnique(user)) {
+    if (user.email && !(await this.userService.checkEmailUnique(user))) {
       return AjaxResult.error(`新增用户'${user.userName}'失败，邮箱账号已存在`);
     }
-    user.createBy = loginUser.getUsername(); 
+    user.createBy = loginUser.getUsername();
     user.password = await this.securityUtils.encryptPassword(user.password);
     return AjaxResult.success(await this.userService.insertUser(user));
   }
@@ -241,19 +279,19 @@ export class SysUserController extends BaseController {
   @ApiOperation({ summary: '修改用户' })
   @Log({ title: '用户管理', businessType: BusinessType.UPDATE })
   @Put()
-  async update(@Body() user: SysUser,@Request() req) {
+  async update(@Body() user: SysUser, @Request() req) {
     const loginUser = req.user;
     await this.userService.checkUserAllowed(user);
     await this.userService.checkUserDataScope(user.userId);
     await this.deptService.checkDeptDataScope(user.deptId);
     await this.roleService.checkRoleDataScope(user.roleIds);
-    if (!await this.userService.checkUserNameUnique(user)) {
+    if (!(await this.userService.checkUserNameUnique(user))) {
       return AjaxResult.error(`修改用户'${user.userName}'失败，登录账号已存在`);
     }
-    if (user.phonenumber && !await this.userService.checkPhoneUnique(user)) {
+    if (user.phonenumber && !(await this.userService.checkPhoneUnique(user))) {
       return AjaxResult.error(`修改用户'${user.userName}'失败，手机号码已存在`);
     }
-    if (user.email && !await this.userService.checkEmailUnique(user)) {
+    if (user.email && !(await this.userService.checkEmailUnique(user))) {
       return AjaxResult.error(`修改用户'${user.userName}'失败，邮箱账号已存在`);
     }
     user.updateBy = loginUser.getUsername();
@@ -264,12 +302,18 @@ export class SysUserController extends BaseController {
   @Delete(':userIds')
   @ApiOperation({ summary: '删除用户' })
   @Log({ title: '用户管理', businessType: BusinessType.DELETE })
-  async remove(@Param('userIds',new ParseArrayPipe({ items: Number, separator: ',' })) userIds: number[],@Request() req) {
+  async remove(
+    @Param('userIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    userIds: number[],
+    @Request() req,
+  ) {
     const loginUser = req.user;
     if (userIds.includes(loginUser.userId)) {
       return AjaxResult.error('当前用户不能删除');
     }
-    return AjaxResult.success(await this.userService.deleteUserByIds(userIds,loginUser));
+    return AjaxResult.success(
+      await this.userService.deleteUserByIds(userIds, loginUser),
+    );
   }
 
   @PreAuthorize("hasPermi('system:user:resetPwd')")
@@ -302,13 +346,18 @@ export class SysUserController extends BaseController {
   @PreAuthorize("hasPermi('system:user:query')")
   @Get('authRole/:userId')
   @ApiOperation({ summary: '根据用户编号获取授权角色' })
-  async authRole(@Param('userId', ParseIntPipe) userId: number, @Request() req) {
+  async authRole(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Request() req,
+  ) {
     const loginUser = req.user;
     const user = await this.userService.selectUserById(userId);
-    const roles = await this.roleService.selectRolesByUserId(userId,loginUser);
+    const roles = await this.roleService.selectRolesByUserId(userId, loginUser);
     const ajax = AjaxResult.success();
-    ajax.user = user
-    ajax.roles = this.securityUtils.isAdmin(userId) ? roles : roles.filter(r => !this.securityUtils.isAdmin(r.roleId));
+    ajax.user = user;
+    ajax.roles = this.securityUtils.isAdmin(userId)
+      ? roles
+      : roles.filter((r) => !this.securityUtils.isAdmin(r.roleId));
     return ajax;
   }
 
@@ -316,11 +365,15 @@ export class SysUserController extends BaseController {
   @Put('authRole')
   @ApiOperation({ summary: '用户授权角色' })
   @Log({ title: '用户管理', businessType: BusinessType.GRANT })
-  async insertAuthRole(@Query('userId', ParseIntPipe) userId: number, @Query('roleIds',new ParseArrayPipe({ items: Number, separator: ',' })) roleIds: number[], @Request() req) {
+  async insertAuthRole(
+    @Query('userId', ParseIntPipe) userId: number,
+    @Query('roleIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    roleIds: number[],
+    @Request() req,
+  ) {
     await this.userService.checkUserDataScope(userId);
     await this.roleService.checkRoleDataScope(roleIds);
-    await this.userService.insertUserAuth(userId, roleIds);  
+    await this.userService.insertUserAuth(userId, roleIds);
     return AjaxResult.success();
   }
-
 }

@@ -4,11 +4,9 @@ import { SysRoleDept } from './entities/sys-role-dept.entity';
 import { SysRoleDeptRepository } from './repositories/sys-role-dept.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SysRoleDept])
-  ],
+  imports: [TypeOrmModule.forFeature([SysRoleDept])],
   controllers: [],
   providers: [SysRoleDeptRepository],
-  exports: [SysRoleDeptRepository]
+  exports: [SysRoleDeptRepository],
 })
 export class SysRoleDeptModule {}

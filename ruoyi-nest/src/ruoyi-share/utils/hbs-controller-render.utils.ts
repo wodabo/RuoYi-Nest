@@ -1,14 +1,13 @@
-import { StringUtils } from "./string.utils"
+import { StringUtils } from './string.utils';
 
-
-export class HbsControllerRenderUtils { 
-
-    public static renderHeader(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+export class HbsControllerRenderUtils {
+  public static renderHeader(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, Res } from '@nestjs/common';
 import { ${context.ClassName}Service } from '~/${context.packageName}/${tableNameWithMiddleLine}/${tableNameWithMiddleLine}.service';
 import { ${context.ClassName} } from '~/${context.packageName}/${tableNameWithMiddleLine}/entities/${tableNameWithMiddleLine}.entity';
@@ -27,14 +26,15 @@ import { ExcelUtils } from '~/ruoyi-share/utils/excel.utils';
  * @date ${context.datetime}
  *
  */
-        `
-    }
-    public static renderClass(context) {
-        const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '')
-        const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter = StringUtils.uncapitalize(ClassNameWithoutSysPrefix)
-        const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0)
-        const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-')
-        return `
+        `;
+  }
+  public static renderClass(context) {
+    const ClassNameWithoutSysPrefix = context.ClassName.replace(/^sys/i, '');
+    const ClassNameWithoutSysPrefixAndLowerCaseFirstLetter =
+      StringUtils.uncapitalize(ClassNameWithoutSysPrefix);
+    const alias = ClassNameWithoutSysPrefixAndLowerCaseFirstLetter.charAt(0);
+    const tableNameWithMiddleLine = context.tableName.replace(/_/g, '-');
+    return `
 @ApiTags('${context.functionName}')
 @Controller('${context.moduleName}/${context.businessName}')
 export class ${context.ClassName}Controller extends BaseController {
@@ -127,7 +127,6 @@ export class ${context.ClassName}Controller extends BaseController {
         return this.success();
     }
 }
-        `
-    }
-
+        `;
+  }
 }

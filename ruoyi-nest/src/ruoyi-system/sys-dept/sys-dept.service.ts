@@ -21,14 +21,14 @@ export class SysDeptService {
     private readonly deptRepository: SysDeptRepository,
     private readonly securityUtils: SecurityUtils,
     private readonly treeUtils: TreeUtils,
-    private readonly roleRepository: SysRoleRepository  
+    private readonly roleRepository: SysRoleRepository,
   ) {}
 
-  @DataScope({deptAlias: 'd'})
+  @DataScope({ deptAlias: 'd' })
   async selectDeptList(query: SysDept): Promise<[SysDept[], number]> {
     // // 获取当前方法的元数据
     // const metadata = Reflect.getMetadata(DATA_SCOPE_KEY, this.selectDeptList);
-    
+
     // // 从元数据中获取注解参数
     // const { deptAlias } = metadata;
 
@@ -36,21 +36,32 @@ export class SysDeptService {
     //   // 设置查询参数
     //   query.deptAlias = deptAlias;
     // }
-    
+    if (!query.delFlag) {
+      query.delFlag = '0';
+    }
     return this.deptRepository.selectDeptList(query);
   }
 
   async selectDeptTreeList(query: SysDept): Promise<TreeSelect[]> {
     const [depts, _total] = await this.selectDeptList(query);
 
-    const transformedDepts = depts.map(dept => ({id:dept.deptId,label:dept.deptName,parentId:dept.parentId}));
-    
-    return this.treeUtils.arrayToTree(transformedDepts, 'id', 'parentId', 'children');
+    const transformedDepts = depts.map((dept) => ({
+      id: dept.deptId,
+      label: dept.deptName,
+      parentId: dept.parentId,
+    }));
+
+    return this.treeUtils.arrayToTree(
+      transformedDepts,
+      'id',
+      'parentId',
+      'children',
+    );
   }
 
   buildDeptTree(depts: SysDept[]): SysDept[] {
     const returnList: SysDept[] = [];
-    const tempList = depts.map(dept => dept.deptId);
+    const tempList = depts.map((dept) => dept.deptId);
     for (const dept of depts) {
       if (!tempList.includes(dept.parentId)) {
         this.recursionFn(depts, dept);
@@ -62,7 +73,7 @@ export class SysDeptService {
 
   buildDeptTreeSelect(depts: SysDept[]): TreeSelect[] {
     const deptTrees = this.buildDeptTree(depts);
-    return deptTrees.map(dept => {
+    return deptTrees.map((dept) => {
       const treeSelect = new TreeSelect();
       treeSelect.id = dept.deptId;
       treeSelect.label = dept.deptName;
@@ -70,15 +81,18 @@ export class SysDeptService {
     });
   }
 
-    /**
+  /**
    * 根据角色ID查询部门树信息
-   * 
+   *
    * @param roleId 角色ID
    * @return 选中部门列表
    */
   async selectDeptListByRoleId(roleId: number): Promise<number[]> {
     const role = await this.roleRepository.selectRoleById(roleId);
-    return this.deptRepository.selectDeptListByRoleId(roleId, role.deptCheckStrictly);
+    return this.deptRepository.selectDeptListByRoleId(
+      roleId,
+      role.deptCheckStrictly,
+    );
   }
 
   async selectDeptById(deptId: number): Promise<SysDept> {
@@ -100,7 +114,10 @@ export class SysDeptService {
   }
   async checkDeptNameUnique(dept: SysDept): Promise<boolean> {
     const deptId = dept.deptId ? dept.deptId : -1;
-    const existingDept = await this.deptRepository.checkDeptNameUnique(dept.deptName, dept.parentId);
+    const existingDept = await this.deptRepository.checkDeptNameUnique(
+      dept.deptName,
+      dept.parentId,
+    );
     if (existingDept && existingDept.deptId !== deptId) {
       return false;
     }
@@ -110,8 +127,8 @@ export class SysDeptService {
   async checkDeptDataScope(deptId: number): Promise<void> {
     const loginUser = this.securityUtils.getLoginUser();
     if (!this.securityUtils.isAdmin(loginUser.userId) && deptId) {
-      const dept = new SysDept()
-      dept.deptId = deptId
+      const dept = new SysDept();
+      dept.deptId = deptId;
       const depts = await this.selectDeptList(dept);
       if (!depts.length) {
         throw new ServiceException('没有权限访问部门数据！');
@@ -123,7 +140,7 @@ export class SysDeptService {
     const info = await this.deptRepository.selectDeptById(dept.parentId);
     // 如果父节点不为正常状态,则不允许新增子节点
     if (!info || info.status !== UserConstants.DEPT_NORMAL) {
-      throw new ServiceException("部门停用，不允许新增");
+      throw new ServiceException('部门停用，不允许新增');
     }
     dept.ancestors = `${info.ancestors},${dept.parentId}`;
     return this.deptRepository.insertDept(dept);
@@ -139,7 +156,11 @@ export class SysDeptService {
       await this.updateDeptChildren(dept.deptId, newAncestors, oldAncestors);
     }
     const result = await this.deptRepository.updateDept(dept);
-    if (dept.status === UserConstants.DEPT_NORMAL && dept.ancestors && dept.ancestors !== '0') {
+    if (
+      dept.status === UserConstants.DEPT_NORMAL &&
+      dept.ancestors &&
+      dept.ancestors !== '0'
+    ) {
       await this.updateParentDeptStatusNormal(dept);
     }
     return result;
@@ -150,9 +171,13 @@ export class SysDeptService {
     await this.deptRepository.updateDeptStatusNormal(deptIds);
   }
 
-  private async updateDeptChildren(deptId: number, newAncestors: string, oldAncestors: string): Promise<void> {
+  private async updateDeptChildren(
+    deptId: number,
+    newAncestors: string,
+    oldAncestors: string,
+  ): Promise<void> {
     const children = await this.deptRepository.selectChildrenDeptById(deptId);
-    children.forEach(child => {
+    children.forEach((child) => {
       child.ancestors = child.ancestors.replace(oldAncestors, newAncestors);
     });
     if (children.length > 0) {
@@ -175,7 +200,7 @@ export class SysDeptService {
   }
 
   private getChildList(list: SysDept[], t: SysDept): SysDept[] {
-    return list.filter(n => n.parentId === t.deptId);
+    return list.filter((n) => n.parentId === t.deptId);
   }
 
   private hasChild(list: SysDept[], t: SysDept): boolean {

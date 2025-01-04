@@ -1,6 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { SysDeptService } from '~/ruoyi-system/sys-dept/sys-dept.service';    
+import { SysDeptService } from '~/ruoyi-system/sys-dept/sys-dept.service';
 import { SysDept } from '~/ruoyi-system/sys-dept/entities/sys-dept.entity';
 import { TableDataInfo } from '~/ruoyi-share/response/table-data-info';
 import { BaseController } from '~/ruoyi-share/controller/base-controller';
@@ -17,10 +27,10 @@ export class SysDeptController extends BaseController {
   }
 
   @ApiOperation({ summary: '获取部门列表' })
-  @PreAuthorize('hasPermi("system:dept:list")') 
+  @PreAuthorize('hasPermi("system:dept:list")')
   @Get('list')
   async list(@Query() query: SysDept, @Request() req): Promise<AjaxResult> {
-    const [list, total] = await this.sysDeptService.selectDeptList(query); 
+    const [list, total] = await this.sysDeptService.selectDeptList(query);
     return this.success(list);
   }
 
@@ -28,8 +38,12 @@ export class SysDeptController extends BaseController {
   @PreAuthorize('hasPermi("system:dept:list")')
   @Get('list/exclude/:deptId')
   async excludeChild(@Param('deptId') deptId: string): Promise<AjaxResult> {
-    const [list, _total] = await this.sysDeptService.selectDeptList(new SysDept());
-    const depts = list.filter(d => d.deptId !== +deptId && !d.ancestors.split(',').includes(deptId));
+    const [list, _total] = await this.sysDeptService.selectDeptList(
+      new SysDept(),
+    );
+    const depts = list.filter(
+      (d) => d.deptId !== +deptId && !d.ancestors.split(',').includes(deptId),
+    );
     return this.success(depts);
   }
 
@@ -39,6 +53,7 @@ export class SysDeptController extends BaseController {
   async getInfo(@Param('deptId') deptId: string): Promise<AjaxResult> {
     await this.sysDeptService.checkDeptDataScope(+deptId);
     const dept = await this.sysDeptService.selectDeptById(+deptId);
+    console.log('[ dept ] >', dept);
     return this.success(dept);
   }
 
@@ -48,7 +63,7 @@ export class SysDeptController extends BaseController {
   @Post()
   async add(@Body() dept: SysDept, @Request() req): Promise<AjaxResult> {
     const loginUser = req.user;
-    if (!await this.sysDeptService.checkDeptNameUnique(dept)) {
+    if (!(await this.sysDeptService.checkDeptNameUnique(dept))) {
       return this.error(`新增部门'${dept.deptName}'失败，部门名称已存在`);
     }
     dept.createBy = loginUser.getUsername();
@@ -63,13 +78,16 @@ export class SysDeptController extends BaseController {
   async edit(@Body() dept: SysDept, @Request() req): Promise<AjaxResult> {
     const loginUser = req.user;
     await this.sysDeptService.checkDeptDataScope(dept.deptId);
-    if (!await this.sysDeptService.checkDeptNameUnique(dept)) {
+    if (!(await this.sysDeptService.checkDeptNameUnique(dept))) {
       return this.error(`修改部门'${dept.deptName}'失败，部门名称已存在`);
     }
     if (dept.parentId === dept.deptId) {
       return this.error(`修改部门'${dept.deptName}'失败，上级部门不能是自己`);
     }
-    if (dept.status === '1' && await this.sysDeptService.selectNormalChildrenDeptById(dept.deptId) > 0) {
+    if (
+      dept.status === '1' &&
+      (await this.sysDeptService.selectNormalChildrenDeptById(dept.deptId)) > 0
+    ) {
       return this.error('该部门包含未停用的子部门！');
     }
     dept.updateBy = loginUser.getUsername();
